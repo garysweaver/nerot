@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -26,7 +25,6 @@ import static org.junit.Assert.*;
 // RunWith is required to force what would otherwise look like a JUnit 3.x test
 // to run with the JUnit 4 test runner.
 @RunWith(SpringJUnit4ClassRunner.class)
-//@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(locations={"../nerot.xml"})
 public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
 
