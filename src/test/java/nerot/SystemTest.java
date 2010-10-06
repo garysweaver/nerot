@@ -55,7 +55,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     @Test public void testRss() throws Throwable {
         // every five seconds
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
-        nerot.scheduleRss("http://news.google.com/news?ned=us&topic=t&output=rss", "0/1 * * * * ?");
+        nerot.scheduleRss(url, "0/1 * * * * ?");
         try {
             Thread.sleep(3000);
         }
