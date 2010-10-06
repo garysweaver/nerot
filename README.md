@@ -52,6 +52,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
 
    ...
    
+   <!-- note: this doesn't work yet- hope to add soon. for now just build it and grab from local repo. -->
    <repository>
        <snapshots>
            <enabled>true</enabled>
@@ -64,12 +65,6 @@ If you wish to just use it as part of your project as a dependency, use this in 
 ### Download
 
 If you'd like to use with Ivy, etc. or just as an Ant dependency and need the jar, see [downloads][rel] it.
-
-### Nerot Configuration
-
-Add a file in the classpath or WEB-INF/classes (or src/main/resources in a standard Maven 2 project) called nerot.xml, or perform similar configuration via some other Spring mechanism:
-
-See the [nerot.xml][config] included in the project source for an example of usage.
 
 ### Usage
 
