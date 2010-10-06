@@ -22,8 +22,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 
-// RunWith is required to force what would otherwise look like a JUnit 3.x test
-// to run with the JUnit 4 test runner.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"../nerot.xml"})
 public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
@@ -44,15 +42,11 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         return nerot;
     }
 
-    protected String[] getConfigLocations() {
-        return new String[] {"classpath:nerot.xml"};
-    }
-    
     // just a test to allow you to manually eye results for now. this isn't really testing anything unless you eye it.
     // could add unit tests, etc. but it really doesn't do a whole lot.
     @Test public void testRss() throws Throwable {
-        // every five seconds
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
+        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
         nerot.scheduleRss(url, "0/1 * * * * ?");
         try {
             Thread.sleep(3000);
@@ -67,7 +61,6 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     }
     
     @Test public void testStaticMethod() throws Throwable {
-        // every five seconds
         GenericTask task = new GenericTask();
         String key = "foo";
         String jobId = "myJob";
@@ -75,7 +68,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         task.setActor(Math.class);
         task.setMethod("random");
         task.setArgs(null);
-        
+        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
         nerot.schedule(jobId, task, "0/1 * * * * ?");
         try {
             Thread.sleep(3000);
@@ -90,7 +83,6 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     }
     
     @Test public void testNonstaticMethod() throws Throwable {
-        // every five seconds
         GenericTask task = new GenericTask();
         String jobId = "myJob";
         String key = "foo";
@@ -101,7 +93,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         task.setActor(obj);
         task.setMethod("someFantasticMethod");
         task.setArgs(new Object[] {"s", new Date(), true, 'c', 1.0D, new Character('c')});
-        
+        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
         nerot.schedule(jobId, task, "0/1 * * * * ?");
         try {
             Thread.sleep(3000);
