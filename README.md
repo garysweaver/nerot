@@ -73,56 +73,11 @@ See the [nerot.xml][config] included in the project source for an example of usa
 
 ### Usage
 
-See the [lone system test][test], or try one of these:
-
-RSS example:
-
-    String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
-    nerot.scheduleRss("http://news.google.com/news?ned=us&topic=t&output=rss", "0/1 * * * * ?");
-    try {
-        Thread.sleep(3000);
-    }
-    catch (Throwable t) {
-        t.printStackTrace();
-    }
-
-    System.err.println( "Got feed: " + nerot.getRss(url));
-
-
-
-    Class math = Math.class;
-    nerot.schedule("http://news.google.com/news?ned=us&topic=t&output=rss", "0/1 * * * * ?");
-    try {
-        Thread.sleep(3000);
-    }
-    catch (Throwable t) {
-        t.printStackTrace();
-    }
-    
-    SyndFeed feed = nerot.getRss(url);
-
-###
-
-### More
-
-http://www.quartz-scheduler.org/docs/cookbook/ServletInitScheduler.html
-
-http://old.nabble.com/1.6-QuartzInitializerServlet-Tomcat-example-td16280448.html
-
-http://oreilly.com/java/archive/quartz.html?page=1
-
-http://mail2vks.wordpress.com/2007/11/14/say-goodbye-to-timertask-for-scheduling-use-quartz-instead/
-
-http://techmaddy.com/?p=465
-
-http://obscuredclarity.blogspot.com/2010/08/quartz-jobsxml-example-single-job.html
-
-http://www.zabada.com/technology/Wiki.jsp?page=SpringAndQuartz
+See the [system tests][test] for now, which provide examples of RSS, calling Math.random(), and calling a custom Class instance that doesn't need anything special to make it work with Nerot.
 
 ### License
 
 Copyright (c) 2010 Gary S. Weaver, released under the [MIT license][lic].
-
 
 [lic]: http://github.com/garysweaver/nerot/blob/master/LICENSE
 [rel]: http://garysweaver.github.com/nerot/releases
