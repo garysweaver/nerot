@@ -62,7 +62,9 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 ### Usage
 
-See the [system tests][test] for now, which provide examples of RSS, calling Math.random(), and calling a custom Class instance that doesn't need anything special to make it work with Nerot.
+See the [Nerot API][apidocs].
+
+Refer to [system tests][test] for examples.
 
 ### License
 
@@ -72,3 +74,4 @@ Copyright (c) 2010 Gary S. Weaver, released under the [MIT license][lic].
 [rel]: http://garysweaver.github.com/nerot/releases
 [config]: http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml
 [test]: http://github.com/garysweaver/nerot/blob/master/src/test/java/nerot/SystemTest.java
+[apidocs]: http://garysweaver.github.com/nerot/apidocs
