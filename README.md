@@ -47,13 +47,13 @@ If you wish to just use it as part of your project as a dependency, use this in 
      <artifactId>nerot</artifactId>
      <version>1.0</version>
    </dependency>
-
-   ...
    
+Along with the repository:
+
    <repository>
-       <id>nerot-repository</id>
-       <name>Nerot Repository</name>
-       <url>http://garysweaver.github.com/nerot/m2/releases</url>
+     <id>nerot-repository</id>
+     <name>Nerot Repository</name>
+     <url>http://garysweaver.github.com/nerot/m2/releases</url>
    </repository>
 
 ### Download
