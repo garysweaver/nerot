@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>nerot</groupId>
+  <artifactId>nerot</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
+    </versions>
+    <lastUpdated>20101007192201</lastUpdated>
+  </versioning>
+</metadata>
