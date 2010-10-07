@@ -31,6 +31,12 @@
     <name>Nerot</name>
     <version>1.0-SNAPSHOT</version>
         
+    <scm>
+        <connection>scm:git:git://github.com/garysweaver/nerot.git</connection>
+        <url>scm:git:git://github.com/garysweaver/nerot.git</url>
+        <developerConnection>scm:git:git://github.com/garysweaver/nerot.git</developerConnection>
+    </scm>
+        
     <licenses>
         <license>
             <name>MIT-Style License</name>
