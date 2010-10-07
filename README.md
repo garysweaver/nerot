@@ -40,31 +40,25 @@ If you wish to build and install into your personal Maven 2 repository, use:
 
 ### Use as a Maven 2 Dependency
 
-*The following doesn't work yet, but hopefully should have this up shortly...*
-
 If you wish to just use it as part of your project as a dependency, use this in your pom.xml (Maven 2):
 
    <dependency>
      <groupId>nerot</groupId>
      <artifactId>nerot</artifactId>
-     <version>1.0-SNAPSHOT</version>
+     <version>1.0</version>
    </dependency>
 
    ...
    
-   <!-- note: this doesn't work yet- hope to add soon. for now just build it and grab from local repo. -->
    <repository>
-       <snapshots>
-           <enabled>true</enabled>
-       </snapshots>
        <id>nerot-repository</id>
-       <name>nerot Repository</name>
-       <url>http://garysweaver.github.com/nerot/m2</url>
+       <name>Nerot Repository</name>
+       <url>http://garysweaver.github.com/nerot/m2/releases</url>
    </repository>
 
 ### Download
 
-If you'd like to use with Ivy, etc. or just as an Ant dependency and need the jar, see [downloads][rel] it.
+If you'd like to use with Ivy, etc. or just as an Ant dependency and need the jar, see [downloads][rel].
 
 ### Usage
 
