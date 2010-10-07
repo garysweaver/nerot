@@ -42,19 +42,19 @@ If you wish to build and install into your personal Maven 2 repository, use:
 
 If you wish to just use it as part of your project as a dependency, use this in your pom.xml (Maven 2):
 
-   <dependency>
-     <groupId>nerot</groupId>
-     <artifactId>nerot</artifactId>
-     <version>1.0</version>
-   </dependency>
+    <dependency>
+      <groupId>nerot</groupId>
+      <artifactId>nerot</artifactId>
+      <version>1.0</version>
+    </dependency>
    
 Along with the repository:
 
-   <repository>
-     <id>nerot-repository</id>
-     <name>Nerot Repository</name>
-     <url>http://garysweaver.github.com/nerot/m2/releases</url>
-   </repository>
+    <repository>
+      <id>nerot-repository</id>
+      <name>Nerot Repository</name>
+      <url>http://garysweaver.github.com/nerot/m2/releases</url>
+    </repository>
 
 ### Download
 
