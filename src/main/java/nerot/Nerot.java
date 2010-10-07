@@ -2,8 +2,9 @@ package nerot;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
@@ -15,7 +16,7 @@ public class Nerot {
 
     Store store = null;
     Scheduler scheduler = null;
-    List<String> jobIds = new ArrayList<String>();
+    Map<String, String> jobIds = new HashMap();
     
     public void scheduleRss(String feedUrl, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
         RssUpdateTask task = new RssUpdateTask();
@@ -49,31 +50,42 @@ public class Nerot {
     }
     
     public void schedule(String jobId, Object obj, String method, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        MethodInvokingJobDetailFactoryBean jobDetail = new MethodInvokingJobDetailFactoryBean();
-        jobDetail.setTargetObject(obj);
-        jobDetail.setTargetMethod(method);
-        jobDetail.setName(jobId);
-        jobDetail.setGroup(JOB_GROUP);
-        jobDetail.setConcurrent(false);
-        jobDetail.afterPropertiesSet();
-
-        CronTriggerBean trigger = new CronTriggerBean();
-        trigger.setBeanName("nerot-t_" + jobId);
-        trigger.setJobDetail((JobDetail) jobDetail.getObject());
-        trigger.setCronExpression(cronSchedule);
-        trigger.afterPropertiesSet();
+        String existingCronSchedule = jobIds.get(jobId);
+        if (existingCronSchedule!=null && !existingCronSchedule.equals(cronSchedule)) {
+            // change of schedule to existing job, so unschedule so we'll schedule with newer cronSchedule. This may result with slight overlap of both tasks,
+            // assuming it is asynchronous.
+            unschedule(jobId);
+        }
         
-        jobIds.add(jobId);
-        scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
+        if (jobIds.get(jobId)==null) {
+            MethodInvokingJobDetailFactoryBean jobDetail = new MethodInvokingJobDetailFactoryBean();
+            jobDetail.setTargetObject(obj);
+            jobDetail.setTargetMethod(method);
+            jobDetail.setName(jobId);
+            jobDetail.setGroup(JOB_GROUP);
+            jobDetail.setConcurrent(false);
+            jobDetail.afterPropertiesSet();
+
+            CronTriggerBean trigger = new CronTriggerBean();
+            trigger.setBeanName("nerot-t_" + jobId);
+            trigger.setJobDetail((JobDetail) jobDetail.getObject());
+            trigger.setCronExpression(cronSchedule);
+            trigger.afterPropertiesSet();
+        
+            jobIds.put(jobId, cronSchedule);
+            scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
+            System.err.println("Scheduled job '" + jobId + "'");
+        }
     }
     
     public void unschedule(String jobId) throws org.quartz.SchedulerException {
         scheduler.deleteJob(jobId, JOB_GROUP);
+        jobIds.put(jobId, null);
     }
     
     public void unscheduleAll() throws org.quartz.SchedulerException {
-        for (int i=0; i<jobIds.size(); i++) {
-            unschedule(jobIds.get(i));
+        for (Iterator iter=jobIds.keySet().iterator(); iter.hasNext();) {
+            unschedule((String)iter.next());
         }
     }
 
