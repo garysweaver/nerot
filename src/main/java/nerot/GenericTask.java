@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.lang.reflect.*;
 
 /**
- * Use reflection to call an object generically and store the results in the Store.
+ * A task that uses reflection to call an object generically and store the results in the Store.
  */
 public class GenericTask extends BaseTask {
 

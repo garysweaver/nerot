@@ -11,6 +11,9 @@ public class RssUpdateTask extends BaseTask {
 
     private String feedUrl;
     
+    /**
+     * Creates a new RssClient, gets the feed, and sets the result in the Store.
+     */
     public void execute() {    
         try {
             RssClient client = new RssClient();
@@ -23,10 +26,16 @@ public class RssUpdateTask extends BaseTask {
         }
     }
 
+    /**
+     * Gets the FeedUrl.
+     */
     public String getFeedUrl() {
         return feedUrl;
     }
     
+    /**
+     * Sets the FeedUrl.
+     */
     public void setFeedUrl(String feedUrl) {
         this.feedUrl = feedUrl;
     }

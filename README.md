@@ -62,7 +62,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 ### Usage
 
-See the [Nerot API][apidocs]. It isn't very descriptive yet, but it will get there.
+See the [Nerot API][apidocs]. It isn't totally complete, but hopefully is enough to get you started.
 
 Refer to [system tests][test] for examples.
 

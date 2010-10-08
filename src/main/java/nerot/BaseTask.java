@@ -6,16 +6,17 @@ import org.quartz.JobExecutionException;
 import java.util.Date;
 import java.io.IOException;
 
+/**
+ * A task that has a Store.
+ */
 public abstract class BaseTask implements Task, Storer {
 
     private Store store;
     
-    // package-level method to get Store called by Nerot
     public Store getStore() {
         return store;
     }
     
-    // package-level method to set Store called by Nerot
     public void setStore(Store store) {
         this.store = store;
     }

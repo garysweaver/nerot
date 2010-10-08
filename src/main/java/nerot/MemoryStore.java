@@ -3,6 +3,9 @@ package nerot;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An in-memory Store, backed by a HashMap.
+ */
 public class MemoryStore implements Store {
     
     private Map map = new HashMap();
