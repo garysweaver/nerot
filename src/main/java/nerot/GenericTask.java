@@ -1,11 +1,8 @@
 package nerot;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import java.util.Date;
 import java.io.IOException;
 import java.lang.reflect.*;
+import java.util.Date;
 
 /**
  * A task that uses reflection to call an object generically and store the results in the Store.
@@ -16,16 +13,15 @@ public class GenericTask extends BaseTask {
     private Object actor;
     private String method;
     private Object[] args;
-    
-    public void execute() {    
+
+    public void execute() {
         try {
             Object retobj = null;
             if (actor instanceof Class) {
-                Method m = getMethodObject((Class)actor);
+                Method m = getMethodObject((Class) actor);
                 m.setAccessible(true);
                 retobj = m.invoke(m, args);
-            }
-            else {
+            } else {
                 Method m = getMethodObject(actor.getClass());
                 m.setAccessible(true);
                 retobj = m.invoke(actor, args);
@@ -37,7 +33,7 @@ public class GenericTask extends BaseTask {
             t.printStackTrace();
         }
     }
-    
+
     private Method getMethodObject(Class c) throws Throwable {
         int found = 0;
         Method result = null;
@@ -53,21 +49,21 @@ public class GenericTask extends BaseTask {
                 //System.err.println("Matched method!");
             }
         }
-        
+
         if (found > 1) {
             System.err.println("Warning: " + found + " method signatures matched specified method!");
         }
-        
+
         return result;
     }
-    
+
     private Class[] toClassArray(Object[] o) {
         Class[] result = null;
         if (o != null) {
             result = new Class[o.length];
-            for (int i=0; i<o.length; i++) {
+            for (int i = 0; i < o.length; i++) {
                 Object obj = o[i];
-                if (obj != null) { 
+                if (obj != null) {
                     result[i] = obj.getClass();
                 }
             }
@@ -76,7 +72,7 @@ public class GenericTask extends BaseTask {
         //debugArray(result);
         return result;
     }
-    
+
     /*
     private void debugArray(Object[] o) {
         if (o != null) {
@@ -94,13 +90,12 @@ public class GenericTask extends BaseTask {
         }
     }
     */
-    
+
     private boolean isEquivalent(Class[] c1, Class[] c2) {
         if ((c1 == null || c1.length == 0) && (c2 == null || c2.length == 0)) {
             return true;
-        }
-        else if (c1 != null && c2 != null && c1.length == c2.length) {
-            for (int i=0; i<c1.length; i++) {
+        } else if (c1 != null && c2 != null && c1.length == c2.length) {
+            for (int i = 0; i < c1.length; i++) {
                 Class c1c = toPrimitiveIfWrapperClass(c1[i]);
                 Class c2c = toPrimitiveIfWrapperClass(c2[i]);
                 if (!c1c.getName().equals(c2c.getName())) {
@@ -111,7 +106,7 @@ public class GenericTask extends BaseTask {
         }
         return false;
     }
-    
+
     private Class toPrimitiveIfWrapperClass(Class c) {
         Class result = c;
         if (c == Byte.class) {
@@ -133,7 +128,7 @@ public class GenericTask extends BaseTask {
         }
         return result;
     }
-    
+
     /*
     private void print(Type t) {
         System.err.println("" + t);
@@ -151,56 +146,56 @@ public class GenericTask extends BaseTask {
     public String getKey() {
         return key;
     }
-    
+
     /**
      * Set key for the return Object in Nerot's store.
      */
     public void setKey(String key) {
         this.key = key;
     }
-    
+
     /**
      * Get the instance or class to call.
      */
     public Object getActor() {
         return actor;
     }
-    
+
     /**
      * Set the instance or class to call.
      */
     public void setActor(Object actor) {
         this.actor = actor;
     }
-    
+
     /**
      * Get the method name to call on the actor.
      */
     public String getMethod() {
         return method;
     }
-    
+
     /**
      * Set the method name to call on the actor.
      */
     public void setMethod(String method) {
         this.method = method;
     }
-    
+
     /**
      * Get the arguments to use when calling specified method on the actor.
      */
     public Object[] getArgs() {
         return args;
     }
-    
+
     /**
      * Set the arguments to use when calling specified method on the actor.
      */
     public void setArgs(Object[] args) {
         this.args = args;
     }
-    
+
     /**
      * Set the arguments to use when calling method on the actor.
      */

@@ -1,20 +1,18 @@
 package nerot;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import java.util.Date;
-import java.io.IOException;
 import nerot.rss.RssClient;
+
+import java.io.IOException;
+import java.util.Date;
 
 public class RssUpdateTask extends BaseTask {
 
     private String feedUrl;
-    
+
     /**
      * Creates a new RssClient, gets the feed, and sets the result in the Store.
      */
-    public void execute() {    
+    public void execute() {
         try {
             RssClient client = new RssClient();
             Object val = client.getSyndFeed(feedUrl);
@@ -32,7 +30,7 @@ public class RssUpdateTask extends BaseTask {
     public String getFeedUrl() {
         return feedUrl;
     }
-    
+
     /**
      * Sets the FeedUrl.
      */

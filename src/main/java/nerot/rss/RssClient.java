@@ -3,6 +3,7 @@ package nerot.rss;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+
 import java.net.URL;
 
 public class RssClient {
@@ -14,7 +15,8 @@ public class RssClient {
             reader = new XmlReader(new URL(url));
             result = new SyndFeedInput().build(reader);
         } finally {
-            if (reader != null) {}
+            if (reader != null) {
+            }
             reader.close();
         }
         return result;
