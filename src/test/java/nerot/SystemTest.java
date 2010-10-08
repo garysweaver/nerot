@@ -46,69 +46,77 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     // could add unit tests, etc. but it really doesn't do a whole lot.
     @Test public void testRss() throws Throwable {
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
-        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-        nerot.scheduleRss(url, "0/1 * * * * ?");
-        try {
-            Thread.sleep(3000);
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
         
+        // Schedule job.
+        // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.scheduleRss(url, "0/1 * * * * ?");
+        
+        // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
+        waitForNerot();
+        
+        // Validate it ran task and stored result.
+        // If feed is slow or down, this may fail.
         SyndFeed feed = nerot.getRss(url);
         assertNotNull("Feed was null", feed);
         print(feed);
     }
     
     @Test public void testStaticMethod() throws Throwable {
-        GenericTask task = new GenericTask();
         String key = "foo";
-        String jobId = "myJob";
+
+        // Wrap Math.random().
+        GenericTask task = new GenericTask();
         task.setKey(key);
         task.setActor(Math.class);
         task.setMethod("random");
-        task.setArgs(null);
-        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-        nerot.schedule(jobId, task, "0/1 * * * * ?");
-        try {
-            Thread.sleep(3000);
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
         
+        // Schedule job.
+        // syntax: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.schedule("myJob", task, "0/1 * * * * ?");
+        
+        // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
+        waitForNerot();
+        
+        // Validate it ran task and stored result.
         Object result = nerot.get(key);
         assertNotNull("Result was null", result);
         System.err.println(result);
     }
     
-    @Test public void testNonstaticMethod() throws Throwable {
+    @Test public void testInstanceMethod() throws Throwable {
+        String key = "foo";        
+
+        // Wrap a sample object with GenericTask
         GenericTask task = new GenericTask();
-        String jobId = "myJob";
-        String key = "foo";
-        
-        SampleObjectToWrap obj = new SampleObjectToWrap();
-        
         task.setKey(key);
-        task.setActor(obj);
+        task.setActor(new SampleObjectToWrap());
         task.setMethod("someFantasticMethod");
         task.setArgs(new Object[] {"s", new Date(), true, 'c', 1.0D, new Character('c')});
-        // http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-        nerot.schedule(jobId, task, "0/1 * * * * ?");
-        try {
-            Thread.sleep(3000);
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
         
+        // Schedule job.
+        // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.schedule("myJob", task, "0/1 * * * * ?");
+        
+        // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
+        waitForNerot();
+        
+        // Validate it ran task and stored result.        
         Object result = nerot.get(key);
         assertNotNull("Result was null", result);
         System.err.println(result);
     }
+    
+    private void waitForNerot() {
+        try {
+            // Longer than I needed, but may need to set this higher if your machine is really slow. Wait on Quartz thread to spin up, read schedule, and perform task (usually < 3 sec).
+            Thread.sleep(1000);
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
 
     private void print(SyndFeed feed) {
-
         for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
             SyndEntry entry = (SyndEntry) i.next();
             System.out.println(entry.getTitle());
