@@ -171,6 +171,17 @@
                     <useFile>false</useFile>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <!--
+                    <stylesheetfile>
+                        ${basedir}/src/site/resources/css/jdstyle.css
+                    </stylesheetfile>
+                    -->
+                </configuration>
+            </plugin>
         </plugins>
         <extensions>
             <extension>
