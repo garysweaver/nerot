@@ -42,8 +42,6 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         return nerot;
     }
 
-    // just a test to allow you to manually eye results for now. this isn't really testing anything unless you eye it.
-    // could add unit tests, etc. but it really doesn't do a whole lot.
     @Test public void testRss() throws Throwable {
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
         
