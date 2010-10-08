@@ -98,7 +98,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
         waitForNerot();
         
-        // Validate it ran task and stored result.        
+        // Validate it ran task and stored result.
         Object result = nerot.get(key);
         assertNotNull("Result was null", result);
         System.err.println(result);
