@@ -66,9 +66,9 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 ### Configuration/Usage
 
-1. Either just include the nerot.xml as one of the contexts to load or add its [contents][config] into your Spring context file, or similar.
+1. Either just include [nerot.xml][config] as one of the contexts to load, or add its contents into your Spring context file, or just do the equivalent.
 
-2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config].
+2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
 
     <!-- Controllers -->
 
@@ -77,67 +77,67 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
         ...
     </bean>
 
-3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. 
+3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. Here is an example:
 
     package com.acme;
-
+    
     import com.sun.syndication.feed.synd.SyndFeed;
     import nerot.Nerot;
     import org.springframework.beans.factory.InitializingBean;
     import org.springframework.web.portlet.ModelAndView;
     import org.springframework.web.portlet.mvc.AbstractController;
-
+    
     import javax.portlet.RenderRequest;
     import javax.portlet.RenderResponse;
     import java.util.ArrayList;
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
-
+    
     public class YourController extends AbstractController implements InitializingBean {
-
+    
         private Nerot nerot;
         private String feedUrl = null;
         private String feedSchedule = null;
-
+        
         public Nerot getNerot() {
             return nerot;
         }
-
+        
         public void setNerot(Nerot nerot) {
             this.nerot = nerot;
         }
-
+        
         public String getFeedSchedule() {
             return feedSchedule;
         }
-
+        
         public void setFeedSchedule(String feedSchedule) {
             this.feedSchedule = feedSchedule;
         }
-
+        
         public String getFeedUrl() {
             return feedUrl;
         }
-
+        
         public void setFeedUrl(String feedUrl) {
             this.feedUrl = feedUrl;
         }
-
+        
         public void afterPropertiesSet() throws Exception {
-    
+        
             // This schedules the feed immediately after the bean is instantiated and it should run at least once to start
             nerot.scheduleRss(feedUrl, feedSchedule);
         }
-
+        
         protected ModelAndView handleRenderRequestInternal(RenderRequest renderRequest, RenderResponse renderResponse)
                 throws Exception {
         
             Map<String, Object> params = new HashMap<String, Object>();
-        
+            
             // This gets the feed from the store
             SyndFeed feed = nerot.getRssFromStore(feedUrl);
-    
+            
             if (feed==null) {
                 logger.warn("Got null feed from Nerot for '" + feedUrl + "'");
                 params.put("entries", new ArrayList());
@@ -147,7 +147,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
                 List entries = feed.getEntries();
                 params.put("entries", feed.getEntries());
             }
-
+            
             return new ModelAndView("view", params);
         }
     }
