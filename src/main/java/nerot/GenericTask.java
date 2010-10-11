@@ -95,7 +95,7 @@ public class GenericTask extends BaseTask {
         return result;
     }
 
-    private String arrayToString(Object[] o, StringBuffer sb) {
+    private String arrayToString(Object[] o) {
         StringBuffer sb = new StringBuffer();
         if (o != null) {
             sb.append("[");
