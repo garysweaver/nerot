@@ -71,86 +71,13 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
 
     <!-- Controllers -->
-
+    
     <bean name="yourController" class="com.acme.YourController">
         <property name="nerot" ref="nerot"/>
         ...
     </bean>
 
-3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. Here is an example:
-
-    package com.acme;
-    
-    import com.sun.syndication.feed.synd.SyndFeed;
-    import nerot.Nerot;
-    import org.springframework.beans.factory.InitializingBean;
-    import org.springframework.web.portlet.ModelAndView;
-    import org.springframework.web.portlet.mvc.AbstractController;
-    
-    import javax.portlet.RenderRequest;
-    import javax.portlet.RenderResponse;
-    import java.util.ArrayList;
-    import java.util.HashMap;
-    import java.util.List;
-    import java.util.Map;
-    
-    public class YourController extends AbstractController implements InitializingBean {
-    
-        private Nerot nerot;
-        private String feedUrl = null;
-        private String feedSchedule = null;
-        
-        public Nerot getNerot() {
-            return nerot;
-        }
-        
-        public void setNerot(Nerot nerot) {
-            this.nerot = nerot;
-        }
-        
-        public String getFeedSchedule() {
-            return feedSchedule;
-        }
-        
-        public void setFeedSchedule(String feedSchedule) {
-            this.feedSchedule = feedSchedule;
-        }
-        
-        public String getFeedUrl() {
-            return feedUrl;
-        }
-        
-        public void setFeedUrl(String feedUrl) {
-            this.feedUrl = feedUrl;
-        }
-        
-        public void afterPropertiesSet() throws Exception {
-        
-            // This schedules the feed immediately after the bean is instantiated and it should run at least once to start
-            nerot.scheduleRss(feedUrl, feedSchedule);
-        }
-        
-        protected ModelAndView handleRenderRequestInternal(RenderRequest renderRequest, RenderResponse renderResponse)
-                throws Exception {
-        
-            Map<String, Object> params = new HashMap<String, Object>();
-            
-            // This gets the feed from the store
-            SyndFeed feed = nerot.getRssFromStore(feedUrl);
-            
-            if (feed==null) {
-                logger.warn("Got null feed from Nerot for '" + feedUrl + "'");
-                params.put("entries", new ArrayList());
-            }
-            else {
-                logger.info("Got feed from Nerot for '" + feedUrl + "'");
-                List entries = feed.getEntries();
-                params.put("entries", feed.getEntries());
-            }
-            
-            return new ModelAndView("view", params);
-        }
-    }
+3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][example] for an example.
 
 ### Debugging
 
@@ -178,5 +105,6 @@ Copyright (c) 2010 Gary S. Weaver, released under the [MIT license][lic].
 [lic]: http://github.com/garysweaver/nerot/blob/master/LICENSE
 [rel]: http://garysweaver.github.com/nerot/releases
 [config]: http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml
+[example]: http://github.com/garysweaver/nerot/blob/master/examples/PortletController.xml
 [test]: http://github.com/garysweaver/nerot/blob/master/src/test/java/nerot/SystemTest.java
 [apidocs]: http://garysweaver.github.com/nerot/apidocs
