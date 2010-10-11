@@ -71,7 +71,6 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
 
     <!-- Controllers -->
-    
     <bean name="yourController" class="com.acme.YourController">
         <property name="nerot" ref="nerot"/>
         ...
