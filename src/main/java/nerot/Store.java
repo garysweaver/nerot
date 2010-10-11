@@ -15,6 +15,7 @@ public interface Store {
 
     /**
      * Get the value for the specified key.
+     *
      * @param key the key to use to lookup the specified value
      * @return the value of the key, or null if none if found
      */

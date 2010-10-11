@@ -10,6 +10,7 @@ public class TaskRunner implements Runnable {
     
     /**
      * Set the Task.
+     *
      * @param task the Task
      */
     public void setTask(Task task) {

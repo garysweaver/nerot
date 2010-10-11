@@ -1,6 +1,8 @@
 package nerot;
 
 import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.springframework.scheduling.quartz.CronTriggerBean;
@@ -25,6 +27,8 @@ public class Nerot {
      * The Quartz job group used by Nerot.
      */
     private static final String JOB_GROUP = "Nerot";
+    
+    private static final Log LOG = LogFactory.getLog(Nerot.class); 
 
     Store store = null;
     Scheduler scheduler = null;
@@ -94,6 +98,9 @@ public class Nerot {
         }
         
         if (executeOnStart) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Executing job '" + jobId + "' on start");
+            }
             runOnceAsynchronously(task);
         }
         schedule(jobId, task, "execute", cronSchedule);
@@ -155,7 +162,7 @@ public class Nerot {
 
             jobIds.put(jobId, cronSchedule);
             scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
-            System.err.println("Scheduled job '" + jobId + "' with schedule '" + cronSchedule + "'");
+            LOG.info("Scheduled job '" + jobId + "' with schedule '" + cronSchedule + "'");
         }
     }
 
@@ -165,6 +172,7 @@ public class Nerot {
      * @param jobId the job id specified previously in a schedule method.
      */
     public void unschedule(String jobId) throws org.quartz.SchedulerException {
+        LOG.info("Unscheduling job '" + jobId + "'");
         scheduler.deleteJob(jobId, JOB_GROUP);
         jobIds.put(jobId, null);
     }

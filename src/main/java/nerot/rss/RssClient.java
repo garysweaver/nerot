@@ -22,8 +22,8 @@ public class RssClient {
             result = new SyndFeedInput().build(reader);
         } finally {
             if (reader != null) {
+                reader.close();
             }
-            reader.close();
         }
         return result;
     }

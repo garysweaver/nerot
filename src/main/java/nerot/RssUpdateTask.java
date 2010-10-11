@@ -1,11 +1,15 @@
 package nerot;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import nerot.rss.RssClient;
 
 import java.io.IOException;
 import java.util.Date;
 
 public class RssUpdateTask extends BaseTask {
+
+    private static final Log LOG = LogFactory.getLog(GenericTask.class);
 
     private String feedUrl;
 
@@ -17,10 +21,11 @@ public class RssUpdateTask extends BaseTask {
             RssClient client = new RssClient();
             Object val = client.getSyndFeed(feedUrl);
             getStore().set(feedUrl, client.getSyndFeed(feedUrl));
-            System.err.println("stored feed: " + feedUrl);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("stored feed: " + feedUrl);
+            }
         } catch (Throwable t) {
-            System.err.println("failed to get feed: " + feedUrl);
-            t.printStackTrace();
+            LOG.error("failed to get feed: " + feedUrl, t);
         }
     }
 

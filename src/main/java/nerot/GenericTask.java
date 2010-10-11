@@ -1,5 +1,8 @@
 package nerot;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.Date;
@@ -8,6 +11,8 @@ import java.util.Date;
  * A task that uses reflection to call an object generically and store the results in the Store.
  */
 public class GenericTask extends BaseTask {
+    
+    private static final Log LOG = LogFactory.getLog(GenericTask.class);
 
     private String key;
     private Object actor;
@@ -19,6 +24,10 @@ public class GenericTask extends BaseTask {
      */
     public void execute() {
         try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Executing GenericTask. key='" + key + "', actor='" + actor + "', method='" + method + "'. args='" + arrayToString(args) + "'");
+            }
+            
             Object retobj = null;
             if (actor instanceof Class) {
                 Method m = getMethodObject((Class) actor);
@@ -30,10 +39,11 @@ public class GenericTask extends BaseTask {
                 retobj = m.invoke(actor, args);
             }
             getStore().set(key, retobj);
-            System.err.println("stored object for key: " + key);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("stored object for key: " + key);
+            }
         } catch (Throwable t) {
-            System.err.println("failed to set object for key: " + key);
-            t.printStackTrace();
+            LOG.error("failed to set object for key: " + key, t);
         }
     }
 
@@ -43,18 +53,24 @@ public class GenericTask extends BaseTask {
         Method[] methods = c.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
-            //System.err.println("Checking reflected method name '" + method.getName() + "' vs. supplied method name '" + getMethod() + "'");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Checking reflected method name '" + method.getName() + "' vs. supplied method name '" + getMethod() + "'");
+            }
+            
             if (method.getName().equals(getMethod()) && isEquivalent(toClassArray(args), method.getParameterTypes())) {
                 if (result != null) {
                     found++;
                 }
                 result = method;
-                //System.err.println("Matched method!");
+                
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Matched method '" + method + "'");
+                }
             }
         }
 
         if (found > 1) {
-            System.err.println("Warning: " + found + " method signatures matched specified method!");
+            LOG.warn("" + found + " method signatures matched specified method!");
         }
 
         return result;
@@ -71,28 +87,31 @@ public class GenericTask extends BaseTask {
                 }
             }
         }
-        //System.err.println("toClassArray results:");
-        //debugArray(result);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("toClassArray results: " + arrayToString(result));
+        }
+
         return result;
     }
 
-    /*
-    private void debugArray(Object[] o) {
+    private String arrayToString(Object[] o, StringBuffer sb) {
+        StringBuffer sb = new StringBuffer();
         if (o != null) {
-            System.err.print("[");
+            sb.append("[");
             for (int i=0; i<o.length; i++) {
                 if (i!=0) {
-                    System.err.print(",");
+                    sb.append(",");
                 }
-                System.err.print(o[i]);
+                sb.append(o[i]);
             }
-            System.err.println("]");
+            sb.append("]");
         }
         else {
-            System.err.print(o);
+            sb.append(o);
         }
+        return sb.toString();
     }
-    */
 
     private boolean isEquivalent(Class[] c1, Class[] c2) {
         if ((c1 == null || c1.length == 0) && (c2 == null || c2.length == 0)) {
@@ -131,17 +150,6 @@ public class GenericTask extends BaseTask {
         }
         return result;
     }
-
-    /*
-    private void print(Type t) {
-        System.err.println("" + t);
-        Method[] methods = t.getClass().getDeclaredMethods();
-        for (int i=0; i < methods.length; i++) {
-            Method m = methods[i];
-            System.err.println(m.getName());
-        }
-    }
-    */
 
     /**
      * Key for the value stored in Nerot's store.
