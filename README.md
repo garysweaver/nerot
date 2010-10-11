@@ -66,6 +66,19 @@ See the [Nerot API][apidocs]. It isn't totally complete, but hopefully is enough
 
 Refer to [system tests][test] for examples.
 
+### Debugging
+
+To enable logging to console, you may add a log4j.properties file to the classpath containing something like:
+
+    log4j.rootLogger=WARN, A1
+    
+    log4j.appender.A1=org.apache.log4j.ConsoleAppender
+    log4j.appender.A1.layout=org.apache.log4j.TTCCLayout
+    log4j.appender.A1.layout.ContextPrinting=enabled
+    log4j.appender.A1.layout.DateFormat=ISO8601
+    
+    log4j.logger.nerot=DEBUG
+
 ### Release History
 
 v2.0 - Changes to method names/API for clarification. Addition of initial task execution option/default.
