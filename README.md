@@ -75,7 +75,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
            ...
        </bean>
 
-3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][example] for an example.
+3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
 
 ### Debugging
 
@@ -103,6 +103,6 @@ Copyright (c) 2010 Gary S. Weaver, released under the [MIT license][lic].
 [lic]: http://github.com/garysweaver/nerot/blob/master/LICENSE
 [rel]: http://garysweaver.github.com/nerot/releases
 [config]: http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml
-[example]: http://github.com/garysweaver/nerot/blob/master/examples/PortletController.xml
+[PortletController.java]: http://github.com/garysweaver/nerot/blob/master/examples/PortletController.java
 [test]: http://github.com/garysweaver/nerot/blob/master/src/test/java/nerot/SystemTest.java
 [apidocs]: http://garysweaver.github.com/nerot/apidocs
