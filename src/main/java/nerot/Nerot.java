@@ -31,25 +31,37 @@ public class Nerot {
     Map<String, String> jobIds = new HashMap();
 
     /**
-     * Schedule an RSS feed retrieval to be stored in the store.
+     * Spawns thread to get and parse RSS feed to place in store while also schedules task to do the same using specified cronSchedule.
      *
      * @param feedUrl      an RSS feed URL
-     * @param cronSchedule A <a href="http://www.google.com/search?q=quartz+cron+syntax">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     public void scheduleRss(String feedUrl, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        RssUpdateTask task = new RssUpdateTask();
-        task.setStore(store);
-        task.setFeedUrl(feedUrl);
-        schedule(feedUrl, task, "execute", cronSchedule);
+        scheduleRss(feedUrl, cronSchedule, true);
     }
 
     /**
-     * Get a SyndFeed from the store using the specified feedUrl as the key. To be more self-documenting, it might be called "getResultRss".
+     * Schedule an RSS feed retrieval to be stored in the store.
+     *
+     * @param feedUrl      an RSS feed URL
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     * @param executeOnStart true if should spawn thread to execute task immediately, in addition to scheduling for execution
+     */
+    public void scheduleRss(String feedUrl, String cronSchedule, boolean executeOnStart) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        RssUpdateTask task = new RssUpdateTask();
+        task.setStore(store);
+        task.setFeedUrl(feedUrl);
+        schedule(feedUrl, task, cronSchedule, executeOnStart);
+    }
+
+    /**
+     * Get a SyndFeed from the Store using the specified feedUrl as the key. To be more self-documenting, it might be called "getResultRss".
      * This is equivalent to calling get(feedUrl) but it casts the result as SyndFeed.
      *
      * @param feedUrl an RSS feed URL that was scheduled
+     * @return the SyndFeed result of Rome RSS parsing the feed URL
      */
-    public SyndFeed getRss(String feedUrl) {
+    public SyndFeed getRssFromStore(String feedUrl) {
         SyndFeed result = null;
         if (store != null) {
             result = (SyndFeed) store.get(feedUrl);
@@ -58,26 +70,48 @@ public class Nerot {
     }
 
     /**
+     * Spawns thread to execute task then schedules task for execution. If you are looking for a generic way to call any object, see the GenericTask wrapper.
+     *
+     * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
+     * @param task         the Task to execute
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     */
+    public void schedule(String jobId, Task task, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        schedule(jobId, task, cronSchedule, true);
+    }
+
+    /**
      * Schedule any Task. If you are looking for a generic way to call any object, see the GenericTask wrapper.
      *
      * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
      * @param task         the Task to execute
-     * @param cronSchedule A <a href="http://www.google.com/search?q=quartz+cron+syntax">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     * @param executeOnStart true if should spawn thread to execute task immediately, in addition to scheduling for execution
      */
-    public void schedule(String jobId, Task task, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+    public void schedule(String jobId, Task task, String cronSchedule, boolean executeOnStart) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
         if (task instanceof Storer) {
             ((Storer) task).setStore(store);
         }
-
+        
+        if (executeOnStart) {
+            runOnceAsynchronously(task);
+        }
         schedule(jobId, task, "execute", cronSchedule);
+    }
+    
+    private void runOnceAsynchronously(Task task) {
+        TaskRunner tr = new TaskRunner();
+        tr.setTask(task);
+        new Thread(tr).start();        
     }
 
     /**
-     * Get an Object from the Store that was set by a Task. To be more self-documenting it would be called "getFromStore" or "getResult", but this is easier to type and clear enough.
+     * Get an Object from the Store that was set by a Task.
      *
      * @param key the key set on the GenericTask, the feedUrl, or whatever key was used by the Task/called object as the key for the value in the Store.
+     * @return result from Store for the specified key
      */
-    public Object get(String key) {
+    public Object getResultFromStore(String key) {
         Object result = null;
         if (store != null) {
             result = store.get(key);
@@ -94,9 +128,9 @@ public class Nerot {
      * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
      * @param obj          any object that it will call no-arg method
      * @param method       the method name to call on obj
-     * @param cronSchedule A <a href="http://www.google.com/search?q=quartz+cron+syntax">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
-    public void schedule(String jobId, Object obj, String method, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+    private void schedule(String jobId, Object obj, String method, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
         String existingCronSchedule = jobIds.get(jobId);
         if (existingCronSchedule != null && !existingCronSchedule.equals(cronSchedule)) {
             // change of schedule to existing job, so unschedule so we'll schedule with newer cronSchedule. This may result with slight overlap of both tasks,
@@ -121,7 +155,7 @@ public class Nerot {
 
             jobIds.put(jobId, cronSchedule);
             scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
-            System.err.println("Scheduled job '" + jobId + "'");
+            System.err.println("Scheduled job '" + jobId + "' with schedule '" + cronSchedule + "'");
         }
     }
 
@@ -146,6 +180,8 @@ public class Nerot {
 
     /**
      * Gets the Store used by Nerot's get methods. You shouldn't need to access this directly.
+     *
+     * @return the Store
      */
     public Store getStore() {
         return store;
@@ -153,6 +189,8 @@ public class Nerot {
 
     /**
      * Sets the Store used by Nerot's get methods. You shouldn't need to access this directly. It is set via Spring.
+     *
+     * @param store the Store
      */
     public void setStore(Store store) {
         this.store = store;
@@ -160,6 +198,8 @@ public class Nerot {
 
     /**
      * Gets the Quartz Scheduler instance. You shouldn't need to access this directly.
+     *
+     * @return the Scheduler
      */
     public Scheduler getScheduler() {
         return scheduler;
@@ -167,6 +207,8 @@ public class Nerot {
 
     /**
      * Sets the Quartz Scheduler instance. You shouldn't need to access this directly. It is set via Spring.
+     *
+     * @param scheduler the Scheduler
      */
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;

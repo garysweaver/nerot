@@ -3,9 +3,9 @@ Nerot
 
 Nerot lets you to easily schedule tasks on the fly (using Quartz and Spring), calling any object instance's method with any arguments you specify (class method or instance method) and can cache the result for access in a separate thread with built-in RSS retrieval and caching (using Rome). Scheduling supports the Quartz cron-like syntax. It uses an in-memory store for quick asynchronous retrieval, but Tasks and Storing are fully customizable and extendible via the API (uses interfaces, etc.).
 
-Nerot is somewhat like an unreliable but incredibly fast caching system that lets you call anything in Java (well, it needs to be tested with Generics, etc., but handles wrappers and primitives in argument lists). The retrieval is always fast because it never waits, even if the task to get a valid response failed (in which it returns the last in-memory result if no exceptions were thrown, or null if none were ever performed correctly).
+Nerot is somewhat like an unreliable but incredibly fast caching system that lets you call static and instance methods on custom Java classes by wrapping them in a GenericTask, or provides implementations for some tasks (like getting an RSS feed). The retrieval is always fast because it never waits, even if the task to get a valid response failed (in which case, it returns the last in-memory result if no exceptions were thrown, or null if none were ever performed correctly).
 
-Unlike most caching solutions, it is not meant to always provide the content. For example, if you use the RSS functionality to schedule feed retrieval, and the feed was down at least check by the timer, and it never retrieved the feed before while the JVM was up, your code to use Nerot to retrieve the feed will return null, even if it is currently being served. In addition, it likely will cause a higher load on the RSS server than other caching solutions. It will attempt via Quartz timed job to get the feed whether it has been requested or not. The tradeoff for these is that you have almost guaranteed quick delivery and no intentional dependency on feeds or database being available to return quickly (even though it might just return null).
+Unlike most caching solutions, it is not meant to always provide the content. For example, if you use the RSS functionality to schedule feed retrieval, and the feed was down every time Nerot checked it, the attempt to retrieve the feed via Nerot will return null, even if the feed is currently working. In addition, using Nerot will likely cause a higher load on the RSS server than other caching solutions. It will attempt via Quartz timed job to get the feed whether it has been requested or not. The tradeoff for these is that you have almost guaranteed quick delivery and no intentional dependency on feeds or database being available to return quickly (even though it might just return null).
 
 ### Why use Nerot?
 
@@ -45,7 +45,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>1.0</version>
+      <version>2.0</version>
     </dependency>
    
 Along with the repository:
@@ -65,6 +65,12 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 See the [Nerot API][apidocs]. It isn't totally complete, but hopefully is enough to get you started.
 
 Refer to [system tests][test] for examples.
+
+### Release History
+
+v2.0 - Changes to method names/API for clarification. Addition of initial task execution option/default.
+
+v1.0 - Initial Release. Support for RSS and generic tasks.
 
 ### License
 

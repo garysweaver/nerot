@@ -26,6 +26,8 @@ public class RssUpdateTask extends BaseTask {
 
     /**
      * Gets the FeedUrl.
+     *
+     * @return the Feed URL
      */
     public String getFeedUrl() {
         return feedUrl;
@@ -33,6 +35,8 @@ public class RssUpdateTask extends BaseTask {
 
     /**
      * Sets the FeedUrl.
+     *
+     * @param feedUrl the Feed URL
      */
     public void setFeedUrl(String feedUrl) {
         this.feedUrl = feedUrl;

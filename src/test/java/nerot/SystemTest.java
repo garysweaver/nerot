@@ -43,14 +43,32 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
 
         // Schedule job.
         // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-        nerot.scheduleRss(url, "0/1 * * * * ?");
+        nerot.scheduleRss(url, "0 * * * * ?");
 
         // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
         waitForNerot();
 
         // Validate it ran task and stored result.
         // If feed is slow or down, this may fail.
-        SyndFeed feed = nerot.getRss(url);
+        SyndFeed feed = nerot.getRssFromStore(url);
+        assertNotNull("Feed was null", feed);
+        print(feed);
+    }
+    
+    @Test
+    public void testRssWithoutBeginningWithExecution() throws Throwable {
+        String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
+
+        // Schedule job.
+        // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.scheduleRss(url, "0/1 * * * * ?", false);
+
+        // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
+        waitForNerot();
+
+        // Validate it ran task and stored result.
+        // If feed is slow or down, this may fail.
+        SyndFeed feed = nerot.getRssFromStore(url);
         assertNotNull("Feed was null", feed);
         print(feed);
     }
@@ -67,13 +85,36 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
 
         // Schedule job.
         // syntax: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-        nerot.schedule("myJob", task, "0/1 * * * * ?");
+        nerot.schedule("myJob", task, "0 * * * * ?");
 
         // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
         waitForNerot();
 
         // Validate it ran task and stored result.
-        Object result = nerot.get(key);
+        Object result = nerot.getResultFromStore(key);
+        assertNotNull("Result was null", result);
+        System.err.println(result);
+    }
+    
+    @Test
+    public void testStaticMethodWithoutBeginningWithExecution() throws Throwable {
+        String key = "foo";
+
+        // Wrap Math.random().
+        GenericTask task = new GenericTask();
+        task.setKey(key);
+        task.setActor(Math.class);
+        task.setMethod("random");
+
+        // Schedule job.
+        // syntax: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.schedule("myJob", task, "0/1 * * * * ?", false);
+
+        // Ordinarily you wouldn't wait and would just call the get on a different thread whenever you wanted, but here we wait like any normal async method that isn't event-driven.
+        waitForNerot();
+
+        // Validate it ran task and stored result.
+        Object result = nerot.getResultFromStore(key);
         assertNotNull("Result was null", result);
         System.err.println(result);
     }
@@ -97,7 +138,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
         waitForNerot();
 
         // Validate it ran task and stored result.
-        Object result = nerot.get(key);
+        Object result = nerot.getResultFromStore(key);
         assertNotNull("Result was null", result);
         System.err.println(result);
     }
