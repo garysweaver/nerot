@@ -104,7 +104,7 @@ public abstract class BaseTask implements Task, Storable, Primeable {
     /**
      * Sets whether or not the Task should run once on start.
      *
-     * @param runOnceOnStart true if the Task should run once on start, and false otherwise
+     * @param primeRunOnStart true if the Task should run once on start, and false otherwise
      */
     public void setPrimeRunOnStart(boolean primeRunOnStart) {
         this.primeRunOnStart = primeRunOnStart;
