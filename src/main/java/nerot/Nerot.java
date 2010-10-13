@@ -1,6 +1,12 @@
 package nerot;
 
 import com.sun.syndication.feed.synd.SyndFeed;
+import nerot.store.Storable;
+import nerot.store.Store;
+import nerot.task.HttpGetTask;
+import nerot.task.Primeable;
+import nerot.task.RssTask;
+import nerot.task.Task;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDetail;
@@ -8,7 +14,6 @@ import org.quartz.Scheduler;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,40 +32,61 @@ public class Nerot {
      * The Quartz job group used by Nerot.
      */
     private static final String JOB_GROUP = "Nerot";
-    
-    private static final Log LOG = LogFactory.getLog(Nerot.class); 
+
+    private static final Log LOG = LogFactory.getLog(Nerot.class);
 
     Store store = null;
     Scheduler scheduler = null;
     Map<String, String> jobIds = new HashMap();
 
     /**
-     * Spawns thread to get and parse RSS feed to place in store while also schedules task to do the same using specified cronSchedule.
+     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this.
+     *
+     * @param url      URL of the external resource
+     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
+     */
+    public void scheduleHttpGet(String url, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        HttpGetTask task = new HttpGetTask();
+        task.setStore(store);
+        task.setStoreKey(url);
+        task.setUrl(url);
+        schedule(url, task, cronSchedule);
+    }
+
+    /**
+     * Get the response body from an HTTP GET from the Store using the specified url as the key.
+     * This is equivalent to calling get(url) but it casts the result as String.
+     *
+     * @param url URL of the external resource
+     * @return the response body
+     */
+    public String getHttpResponseBodyFromStore(String url) {
+        String result = null;
+        if (store != null) {
+            result = (String) store.get(url);
+        }
+        return result;
+    }
+
+    /**
+     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this.
      *
      * @param feedUrl      an RSS feed URL
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     public void scheduleRss(String feedUrl, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        scheduleRss(feedUrl, cronSchedule, true);
-    }
-
-    /**
-     * Schedule an RSS feed retrieval to be stored in the store.
-     *
-     * @param feedUrl      an RSS feed URL
-     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
-     * @param executeOnStart true if should spawn thread to execute task immediately, in addition to scheduling for execution
-     */
-    public void scheduleRss(String feedUrl, String cronSchedule, boolean executeOnStart) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        RssUpdateTask task = new RssUpdateTask();
+        RssTask task = new RssTask();
         task.setStore(store);
-        task.setFeedUrl(feedUrl);
-        schedule(feedUrl, task, cronSchedule, executeOnStart);
+        task.setStoreKey(feedUrl);
+        task.setUrl(feedUrl);
+        schedule(feedUrl, task, cronSchedule);
     }
 
     /**
-     * Get a SyndFeed from the Store using the specified feedUrl as the key. To be more self-documenting, it might be called "getResultRss".
-     * This is equivalent to calling get(feedUrl) but it casts the result as SyndFeed.
+     * Get a SyndFeed from the Store using the specified feedUrl as the key.
+     * This is equivalent to calling get(feedUrl), casting the result as SyndFeed.
      *
      * @param feedUrl an RSS feed URL that was scheduled
      * @return the SyndFeed result of Rome RSS parsing the feed URL
@@ -74,56 +100,49 @@ public class Nerot {
     }
 
     /**
-     * Spawns thread to execute task then schedules task for execution. If you are looking for a generic way to call any object, see the GenericTask wrapper.
+     * Schedule any Task. If you are looking for a generic way to call any object, see the GenericTask wrapper.
      *
      * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
      * @param task         the Task to execute
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     public void schedule(String jobId, Task task, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        schedule(jobId, task, cronSchedule, true);
-    }
+        if (task instanceof Storable) {
+            ((Storable) task).setStore(store);
+        }
 
-    /**
-     * Schedule any Task. If you are looking for a generic way to call any object, see the GenericTask wrapper.
-     *
-     * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
-     * @param task         the Task to execute
-     * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
-     * @param executeOnStart true if should spawn thread to execute task immediately, in addition to scheduling for execution
-     */
-    public void schedule(String jobId, Task task, String cronSchedule, boolean executeOnStart) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        if (task instanceof Storer) {
-            ((Storer) task).setStore(store);
-        }
-        
-        if (executeOnStart) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Executing job '" + jobId + "' on start");
+        if (task instanceof Primeable) {
+            Primeable p = (Primeable) task;
+            if (p.isPrimeRunOnStart()) {
+                executePrimeRun(p, jobId);
             }
-            runOnceAsynchronously(task);
         }
+
         schedule(jobId, task, "execute", cronSchedule);
     }
-    
-    private void runOnceAsynchronously(Task task) {
-        TaskRunner tr = new TaskRunner();
-        tr.setTask(task);
-        new Thread(tr).start();        
-    }
 
-    /**
-     * Get an Object from the Store that was set by a Task.
-     *
-     * @param key the key set on the GenericTask, the feedUrl, or whatever key was used by the Task/called object as the key for the value in the Store.
-     * @return result from Store for the specified key
-     */
-    public Object getResultFromStore(String key) {
-        Object result = null;
-        if (store != null) {
-            result = store.get(key);
+    public void executePrimeRun(Primeable p, String jobId) {
+        p.primeRun();
+
+        if (p.isPrimeRunValid()) {
+            return;
         }
-        return result;
+
+        for (int count = 1; count <= p.getMaxPrimeRunValidationAttempts(); count++) {
+            try {
+                Thread.sleep(p.getPrimeRunValidationAttemptIntervalMillis());
+            }
+            catch (Throwable t) {
+                LOG.error("Sleep between prime run validations interrupted for job '" + jobId + "'", t);
+            }
+
+            if (p.isPrimeRunValid()) {
+                LOG.info("Prime run of job '" + jobId + "' had valid result (on check " + count + " of " + p.getMaxPrimeRunValidationAttempts() + ")");
+                return;
+            }
+        }
+
+        LOG.info("Prime run of job '" + jobId + "' was unable to be validated. You may want to try increasing maxPrimeRunValidationAttempts (currently set to " + p.getMaxPrimeRunValidationAttempts() + ") and/or primeRunValidationAttemptIntervalMillis (currently set to " + p.getPrimeRunValidationAttemptIntervalMillis() + ").");
     }
 
     /**
@@ -164,6 +183,20 @@ public class Nerot {
             scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
             LOG.info("Scheduled job '" + jobId + "' with schedule '" + cronSchedule + "'");
         }
+    }
+
+    /**
+     * Get an Object from the Store that was set by a Task.
+     *
+     * @param key the key set on the GenericTask, the feedUrl, or whatever key was used by the Task/called object as the key for the value in the Store.
+     * @return result from Store for the specified key
+     */
+    public Object getResultFromStore(String key) {
+        Object result = null;
+        if (store != null) {
+            result = store.get(key);
+        }
+        return result;
     }
 
     /**

@@ -13,7 +13,7 @@
        <property name="waitForJobsToCompleteOnShutdown" value="false"/>
     </bean>
     
-    <bean name="nerotStore" class="nerot.MemoryStore" />
+    <bean name="nerotStore" class="nerot.store.MemoryStore" />
     
     <bean name="nerot" class="nerot.Nerot">
        <property name="scheduler" ref="nerotScheduleFactory"/>

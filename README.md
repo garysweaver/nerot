@@ -1,7 +1,7 @@
 Nerot
 =====
 
-Nerot schedules execution of a Java instance or static method (with arguments you provide) and stores the result in-memory for quick asynchronous retrieval. Basically, it is like traditional response caching, only faster. You never wait on a request after cache expires, because cache never expires. Cache is only refreshed when the scheduled task executes without error. You can wrap any class or Object instance in a GenericTask to call it, or if you are interested in getting an RSS feed, you can use Nerot's built-in RSS feed retrieval Task. And, Tasks and Storing use Interfaces so they are fully customizable and extensible.
+Nerot schedules execution of a Java instance or static method (with arguments you provide) and stores the result in-memory for quick asynchronous retrieval. Basically, it is like traditional response caching, only faster. You never wait on a request after cache expires, because cache never expires. Cache is only refreshed when the scheduled task executes without error. You can wrap any class or Object instance in a GenericTask to call it and store the result in cache. If you are interested in getting an RSS feed, you can use the built-in RSS feed retrieval task. If you are interested in just doing an HTTP GET request (without authentication), you can use the built-in HTTP GET task. Tasks and Stores are fully customizable and extensible.
 
 Note that unlike most caching solutions, Nerot uses unreliable scheduled caching, and therefore does not always provide the content requested. For example, if you use the RSS functionality to schedule feed retrieval, and the feed was down every time Nerot checked, the attempt to retrieve the feed via Nerot will return null, even if the feed is currently working.
 
@@ -47,7 +47,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>2.0</version>
+      <version>3.0</version>
     </dependency>
    
 Along with the repository:
@@ -77,7 +77,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
            ...
        </bean>
 
-3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. This may not be fast enough for Nerot to have stored the result in the Store in some cases, so you could potentially add a delay at the end of the hook, but this isn't recommended. Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
+3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. Nerot has a configuable and optional delay to help the cache get populated from what is probably the first execution (called the "prime run"). Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
 
 ### Debugging
 
@@ -93,6 +93,8 @@ To enable logging to console, you may add a log4j.properties file to the classpa
     log4j.logger.nerot=DEBUG
 
 ### Release History
+
+v3.0 - More changes to method names/API for simplification and better class organization. Addition of HTTP GET task. Addition of prime run and related Primeable interface to make it easier to define tasks that check after schedule to try to give the optional first execution time to populate cache.
 
 v2.0 - Changes to method names/API for clarification. Addition of initial task execution option/default.
 

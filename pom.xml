@@ -29,7 +29,7 @@
     <artifactId>nerot</artifactId>
     <packaging>jar</packaging>
     <name>Nerot</name>
-    <version>2.0</version>
+    <version>3.0</version>
         
     <scm>
         <connection>scm:git:git://github.com/garysweaver/nerot.git</connection>
@@ -81,6 +81,12 @@
             <groupId>rome</groupId>
             <artifactId>rome</artifactId>
             <version>0.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.0.3</version>
         </dependency>
         
         <dependency>
