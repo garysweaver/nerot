@@ -9,7 +9,6 @@ body {
 
 #container {
   margin: 0 auto;
-  width: 900px;
   padding-left: 40px;
   width: 720px;
 }
@@ -17,6 +16,7 @@ body {
 #content {
   float: left;
   padding: 30px 0 10px;
+  width: 100%;
 }
 
 /*underlinemenu from: */
@@ -120,6 +120,11 @@ p {
 
 #content .code_example .code .comment {
   color: #BBFFBB;
+}
+
+#container .releases {
+  float:left;
+  width: 210px;
 }
 
 #footer {
