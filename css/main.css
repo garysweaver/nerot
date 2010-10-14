@@ -1,0 +1,78 @@
+# heavily based on CSS from http://lesscss.org/
+
+body {
+  color: #333333;
+  font-family: "Lucida Grande", Verdana, sans-serif;
+  font-size: 13px;
+  line-height: 1.3em;
+}
+
+#container {
+  margin: 0 auto;
+  width: 900px;
+  padding-left: 40px;
+  width: 720px;
+}
+
+#content {
+  float: left;
+  padding: 30px 0 10px;
+}
+
+h1 {
+  color: #383838;
+  font-size: 26px;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 5px 10px;
+  padding-bottom: 0.4em;
+}
+
+h2 {
+  clear: both;
+  color: #324479;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 5px 10px;
+  padding-bottom: 0.8em;
+}
+
+a {
+  text-decoration:none;
+  color: #AA0400;
+}
+
+p {
+  padding: 0 5px;
+  padding-bottom: 1.5em;
+  margin-bottom: 1.6em;
+}
+
+#container pre {
+  background-color: #E1F0FF;
+  border-color: #AABBCE;
+  border-style: dotted solid;
+  border-width: 1px 2px;
+  color: #000000;
+  display: block;
+  font-size: 15px;
+  line-height: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+#footer {
+  border-top: 1px dashed #CFCFCF;
+  clear: both;
+  color: #B4B4B4;
+  padding: 25px 0;
+  text-align: center;
+}
+
+#footer #copyright {
+  color:#858585;
+  text-align:center;
+}
