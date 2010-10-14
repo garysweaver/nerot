@@ -134,7 +134,7 @@ GenericTask task = new GenericTask();
 task.setStoreKey(key);
 task.setActor(new Foobar());
 task.setMethod("someFantasticMethod");
-task.setArgs(new Object[]{"s", new Date(), true, 'c', 1.0D});
+task.setArgs(new Object[]{"s", y, true, 'c', 1.0D});
 nerot.schedule("myJob", task, "0/1 * * * * ?");
 
 <span class="comment">// Retrieve multiple times without delay</span>
