@@ -118,6 +118,10 @@ p {
   z-index: 1;
 }
 
+#content .code_example .code .comment {
+  color: #BBFFBB;
+}
+
 #footer {
   border-top: 1px dashed #CFCFCF;
   clear: both;
