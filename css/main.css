@@ -19,6 +19,37 @@ body {
   padding: 30px 0 10px;
 }
 
+/*underlinemenu from: */
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+
+.underlinemenu{
+font-weight: bold;
+width: 100%;
+}
+
+.underlinemenu ul{
+padding: 6px 0 7px 0; /*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
+margin: 0;
+text-align: right; //set value to "left", "center", or "right"*/
+}
+
+.underlinemenu ul li{
+display: inline;
+}
+
+.underlinemenu ul li a{
+color: #494949;
+padding: 6px 3px 4px 3px; /*top padding is 6px, bottom padding is 4px*/
+margin-right: 20px; /*spacing between each menu link*/
+text-decoration: none;
+border-bottom: 3px solid gray; /*bottom border is 3px*/
+}
+
+.underlinemenu ul li a:hover, .underlinemenu ul li a.selected{
+border-bottom-color: black;
+}
+
 h1 {
   color: #383838;
   font-size: 26px;
@@ -51,7 +82,7 @@ p {
   margin-bottom: 1.6em;
 }
 
-#container pre {
+#container pre.config {
   background-color: #E1F0FF;
   border-color: #AABBCE;
   border-style: dotted solid;
@@ -62,6 +93,29 @@ p {
   line-height: 20px;
   margin-bottom: 20px;
   padding: 15px;
+}
+
+#content .code_example {
+  -moz-box-shadow: 0 -4px 6px #DDDDDD;
+  background-color: #444444;
+  border-color: #EEEEEE #EEEEEE #DDDDDD;
+  border-style: solid;
+  border-width: 6px 6px 1px;
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 30px;
+  overflow: auto;
+  padding: 15px 5px 5px;
+  position: relative;
+}
+
+#content .code_example .code {
+  color: #EEEEEE;
+  float:left;
+  margin: 0 15px 0 12px;
+  position: relative;
+  width: 210px;
+  z-index: 1;
 }
 
 #footer {

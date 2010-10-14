@@ -10,14 +10,138 @@
   <body>
     <div id="container">
       <div id="content">
-        <h1>Nerot</h1>
+        <div class="underlinemenu">
         <ul>
         <li><a href="http://github.com/garysweaver/nerot">Documentation</a></li>
         <li><a href="http://github.com/garysweaver/nerot">Source</a></li>
         <li><a href="./releases/index.html">Downloads</a></li>
         <li><a href="./apidocs/index.html">API</a></li>
         </ul>
-      </div>
+        </div>
+        <h1>Nerot</h1>
+        
+        <h2>Scheduled Caching Made Simple</h2>
+        
+        Add this dependency to your pom.xml:
+        <pre class="config">
+&lt;dependency&gt;
+    &lt;groupId&gt;nerot&lt;/groupId&gt;
+    &lt;artifactId&gt;nerot&lt;/artifactId&gt;
+    &lt;version&gt;3.0&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+        Add this repository to your pom.xml:
+        <pre class="config">
+&lt;repository&gt;
+    &lt;id&gt;nerot-repository&lt;/id&gt;
+    &lt;name&gt;Nerot Repository&lt;/name&gt;
+    &lt;url&gt;http://garysweaver.github.com/nerot/m2/releases&lt;/url&gt;
+&lt;/repository&gt;</pre>
+        Include <a href="http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml">nerot.xml</a> in your web.xml (or add its contents into your spring config):
+        <pre class="config">
+&lt;web-app&gt;
+    ...
+    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:nerot.xml
+                     ...
+        &lt;/param-value&gt;
+    &lt;/context-param&gt;
+    ...
+&lt;/web-app&gt;</pre>
+
+        Add Nerot to your class:<br/><br/>
+        <div class="code_example">
+          <pre class="code">
+import nerot.Nerot;
+
+public class SomeClass {
+  
+  private Nerot nerot;
+                
+  public void setNerot(Nerot nerot) {
+    this.nerot = nerot;
+  }
+}
+          </pre>
+        </div>
+        
+        Set Nerot on your bean:
+        <pre class="config">
+&lt;bean name=&quot;yourController&quot; class=&quot;com.acme.YourController&quot;&gt;
+    &lt;property name=&quot;nerot&quot; ref=&quot;nerot&quot;/&gt;
+    ...
+&lt;/bean&gt;</pre>
+        
+        <h2>Familiar Scheduling Syntax</h2>
+        
+        <div class="code_example">
+          <pre class="code">
+"0/5 * * * * ?"
+          </pre>
+        </div>
+        
+        <p>
+          Nerot uses <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz CronTrigger Syntax</a>, which is similar to the familiar <a href="http://en.wikipedia.org/wiki/Cron">cron</a> syntax.
+        </p>
+        
+        
+        <h2>RSS feed retrieval</h2>
+        
+        <div class="code_example">
+          <pre class="code">
+<span class="comment">// Schedule on initialization</span>
+nerot.scheduleRss(url, "0 * * * * ?");
+
+<span class="comment">// Retrieve multiple times without delay</span>
+nerot.getRssFromStore(url);
+          </pre>
+        </div>
+        
+        <h2>HTTP GET</h2>
+        
+        <div class="code_example">
+          <pre class="code">
+<span class="comment">// Schedule on initialization</span>
+nerot.scheduleHttpGet(url, "0 * * * * ?");
+
+<span class="comment">// Retrieve multiple times without delay</span>
+nerot.getHttpResponseBodyFromStore(url);
+          </pre>
+        </div>        
+        
+        <h2>Static Methods</h2>
+        
+        <div class="code_example">
+          <pre class="code">
+<span class="comment">// Schedule on initialization
+GenericTask task = new GenericTask();
+task.setStoreKey(key);
+task.setActor(Math.class);
+task.setMethod("random");
+nerot.schedule("myJob", task, "0 * * * * ?");
+
+<span class="comment">// Retrieve multiple times without delay</span>
+Double result = (Double)nerot.getResultFromStore(key);
+          </pre>
+        </div>
+        
+        <h2>Instance Methods</h2>
+        
+        <div class="code_example">
+          <pre class="code">
+<span class="comment">// Schedule on initialization
+GenericTask task = new GenericTask();
+task.setStoreKey(key);
+task.setActor(new Foobar());
+task.setMethod("someFantasticMethod");
+task.setArgs(new Object[]{"s", new Date(), true, 'c', 1.0D});
+nerot.schedule("myJob", task, "0/1 * * * * ?");
+
+<span class="comment">// Retrieve multiple times without delay</span>
+Foobar result = (Foobar)nerot.getResultFromStore(key);
+          </pre>
+        </div>
+        
       <div id="footer">
         <div id="copyright">
           Copyright (c) 2010 Gary S. Weaver, released under the <a href="http://github.com/garysweaver/nerot/blob/master/LICENSE">MIT license</a>.
