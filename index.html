@@ -36,18 +36,18 @@
     &lt;name&gt;Nerot Repository&lt;/name&gt;
     &lt;url&gt;http://garysweaver.github.com/nerot/m2/releases&lt;/url&gt;
 &lt;/repository&gt;</pre>
-        Include <a href="http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml">nerot.xml</a> in your web.xml (or add its contents into your spring config):
+        Add the bean definitions in <a href="http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml">nerot.xml</a> to your application's context:
         <pre class="config">
-&lt;web-app&gt;
-    ...
-    &lt;context-param&gt;
-        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-        &lt;param-value&gt;classpath:nerot.xml
-                     ...
-        &lt;/param-value&gt;
-    &lt;/context-param&gt;
-    ...
-&lt;/web-app&gt;</pre>
+&lt;bean name=&quot;nerotScheduleFactory&quot; class=&quot;org.springframework.scheduling.quartz.SchedulerFactoryBean&quot;&gt;
+   &lt;property name=&quot;waitForJobsToCompleteOnShutdown&quot; value=&quot;false&quot;/&gt;
+&lt;/bean&gt;
+
+&lt;bean name=&quot;nerotStore&quot; class=&quot;nerot.store.MemoryStore&quot; /&gt;
+
+&lt;bean name=&quot;nerot&quot; class=&quot;nerot.Nerot&quot;&gt;
+   &lt;property name=&quot;scheduler&quot; ref=&quot;nerotScheduleFactory&quot;/&gt;
+   &lt;property name=&quot;store&quot; ref=&quot;nerotStore&quot;/&gt;
+&lt;/bean&gt;</pre>
 
         Add Nerot to your class:<br/><br/>
         <div class="code_example">
