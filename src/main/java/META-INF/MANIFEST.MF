@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Export-Package: nerot;uses:="nerot.store,nerot.task,org.quartz",nerot.
+ store,nerot.task;uses:="nerot.store"
+Bundle-Version: 3.1.0
+Tool: Bundlor 1.0.0.RELEASE
+Bundle-Name: Nerot
+Bundle-ManifestVersion: 2
+Import-Package: com.sun.syndication.io,org.quartz
+Bundle-SymbolicName: nerot
+
