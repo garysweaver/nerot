@@ -17,7 +17,7 @@ import java.util.Iterator;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"../nerot.xml"})
+@ContextConfiguration(locations = {"nerot.xml"})
 public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
 
     private Nerot nerot;
