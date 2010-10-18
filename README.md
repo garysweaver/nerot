@@ -47,7 +47,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>3.0</version>
+      <version>3.1</version>
     </dependency>
    
 Along with the repository:
@@ -93,6 +93,8 @@ To enable logging to console, you may add a log4j.properties file to the classpa
     log4j.logger.nerot=DEBUG
 
 ### Release History
+
+v3.1 - Fixed access to a method in Nerot class and added MANIFEST.MF in attempt to help people trying to load as OSGi bundle.
 
 v3.0 - More changes to method names/API for simplification and better class organization. Addition of HTTP GET task. Addition of prime run and related Primeable interface to make it easier to define tasks that check after schedule to try to give the optional first execution time to populate cache.
 
