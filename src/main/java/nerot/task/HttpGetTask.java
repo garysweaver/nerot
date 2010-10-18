@@ -2,9 +2,8 @@ package nerot.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -39,10 +38,10 @@ public class HttpGetTask extends BaseTask {
         HttpClient httpclient = null;
         try {
             httpclient = new DefaultHttpClient();
-            HttpGet httpget = new HttpGet(url); 
+            HttpGet httpget = new HttpGet(url);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             // this will throw HttpResponseException if HTTP status code >= 300
-            responseBody = httpclient.execute(httpget, responseHandler);            
+            responseBody = httpclient.execute(httpget, responseHandler);
         } finally {
             if (httpclient != null) {
                 httpclient.getConnectionManager().shutdown();

@@ -43,7 +43,7 @@ public class Nerot {
      * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
      * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this.
      *
-     * @param url      URL of the external resource
+     * @param url          URL of the external resource
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     public void scheduleHttpGet(String url, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
@@ -121,7 +121,7 @@ public class Nerot {
         schedule(jobId, task, "execute", cronSchedule);
     }
 
-    public void executePrimeRun(Primeable p, String jobId) {
+    private void executePrimeRun(Primeable p, String jobId) {
         p.primeRun();
 
         if (p.isPrimeRunValid()) {

@@ -29,7 +29,7 @@
     <artifactId>nerot</artifactId>
     <packaging>jar</packaging>
     <name>Nerot</name>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1</version>
         
     <scm>
         <connection>scm:git:git://github.com/garysweaver/nerot.git</connection>
