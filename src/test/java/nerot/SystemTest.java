@@ -37,7 +37,7 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     }
 
     @Test
-    public void testRssConvenienceMethods() throws Throwable {
+    public void testRssCronWithDefaultPrimeRun() throws Throwable {
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
 
         // Schedule job and wait up to 5 seconds for valid result.
@@ -52,7 +52,21 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     }
 
     @Test
-    public void testRssWithoutPrimeRun() throws Throwable {
+    public void testRssIntervalWithDefaultPrimeRun() throws Throwable {
+        String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
+
+        // Schedule job and wait up to 5 seconds for valid result.
+        nerot.scheduleRss(url, 1000);
+
+        // Validate it ran task and stored result.
+        // If feed is slow or down, this may fail.
+        SyndFeed feed = nerot.getRssFromStore(url);
+        assertNotNull("Feed was null", feed);
+        print(feed);
+    }
+
+    @Test
+    public void testRssCronWithoutPrimeRun() throws Throwable {
         String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
 
         // Schedule job.
@@ -75,12 +89,49 @@ public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
     }
 
     @Test
-    public void testHttpGetConvenienceMethods() throws Throwable {
+    public void testRssInternalWithoutPrimeRun() throws Throwable {
+        String url = "http://news.google.com/news?ned=us&topic=t&output=rss";
+
+        // Schedule job.
+        RssTask task = new RssTask();
+        task.setStoreKey(url);
+        task.setUrl(url);
+        task.setPrimeRunOnStart(false);
+
+        nerot.schedule(url, task, 1000);
+
+        // Since we specifically told it not to do a prime run (and wait on valid response) we'll wait here.
+        waitForNerot(url);
+
+        // Validate it ran task and stored result.
+        // If feed is slow or down, this may fail.
+        SyndFeed feed = nerot.getRssFromStore(url);
+        assertNotNull("Feed was null", feed);
+        print(feed);
+    }
+
+    @Test
+    public void testHttpGetCron() throws Throwable {
         String url = "http://www.google.com/";
 
         // Schedule job and wait up to 5 seconds for valid result.
         // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
         nerot.scheduleHttpGet(url, "0 * * * * ?");
+
+        // Validate it ran task and stored result.
+        // If feed is slow or down, this may fail.
+        String responseBody = nerot.getHttpResponseBodyFromStore(url);
+        assertNotNull("Result was null", responseBody);
+        System.err.println(responseBody);
+    }
+
+    @Test
+    public void testHttpGetInterval() throws Throwable {
+        String url = "http://www.google.com/";
+
+        // Schedule job and wait up to 5 seconds for valid result.
+        // Syntax at http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+        nerot.scheduleHttpGet(url, 1000);
 
         // Validate it ran task and stored result.
         // If feed is slow or down, this may fail.

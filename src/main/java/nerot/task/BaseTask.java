@@ -2,11 +2,17 @@ package nerot.task;
 
 import nerot.store.Storable;
 import nerot.store.Store;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A task that has a Store.
  */
 public abstract class BaseTask implements Task, Storable, Primeable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BaseTask.class);
 
     /**
      * The default prime run on start value, which is true.
@@ -28,6 +34,40 @@ public abstract class BaseTask implements Task, Storable, Primeable {
     private boolean primeRunOnStart = DEFAULT_PRIME_RUN_ON_START;
     private int maxPrimeRunValidationAttempts = DEFAULT_MAX_PRIME_RUN_VALIDATION_ATTEMPTS;
     private int primeRunValidationAttemptIntervalMillis = DEFAULT_PRIME_RUN_VALIDATION_ATTEMPT_INTERVAL_MILLIS;
+
+    public BaseTask() {
+        // To debug issues with the scheduling thread
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("" + this.getClass().getName() + " instance created");
+        }
+    }
+
+    /**
+     * Execute the task. This is a wrapper around doExecute() that times using Perf4J, logs, stores result, and wraps in
+     * a try/catch.
+     */
+    public void execute() {
+        StopWatch stopWatch = new Log4JStopWatch();
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Executing task: '" + getStoreKey() + "'");
+            }
+            Object result = doExecute();
+            storeResult(result);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stored result for task: '" + getStoreKey() + "'");
+            }
+            stopWatch.stop(getStoreKey() + ".success");
+        } catch (Throwable t) {
+            LOG.error("Task failed: '" + getStoreKey() + "'", t);
+            stopWatch.stop(getStoreKey() + ".failure", "" + t);
+        }
+    }
+
+    /**
+     * The implementation of the task, without the storage.
+     */
+    protected abstract Object doExecute() throws Throwable;
 
     /**
      * Call execute() asynchronously via TaskRunner in a new Thread.
@@ -145,5 +185,13 @@ public abstract class BaseTask implements Task, Storable, Primeable {
      */
     public void setPrimeRunValidationAttemptIntervalMillis(int primeRunValidationAttemptIntervalMillis) {
         this.primeRunValidationAttemptIntervalMillis = primeRunValidationAttemptIntervalMillis;
+    }
+
+    protected void finalize() throws Throwable {
+        // To debug issues with the scheduling thread getting killed off prematurely without warning
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("finalize() called on " + this.getClass().getName() + ", storeKey='" + storeKey + "'");
+        }
+        super.finalize();
     }
 }

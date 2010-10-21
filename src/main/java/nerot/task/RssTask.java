@@ -3,8 +3,8 @@ package nerot.task;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
@@ -13,30 +13,18 @@ import java.net.URL;
  */
 public class RssTask extends BaseTask {
 
-    private static final Log LOG = LogFactory.getLog(GenericTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RssTask.class);
 
     private String url;
 
     /**
      * Gets the feed, and sets the result in the Store.
      */
-    public void execute() {
-        try {
-            Object feed = getSyndFeed(url);
-            storeResult(feed);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("stored feed: " + url);
-            }
-        } catch (Throwable t) {
-            LOG.error("failed to get feed: " + url, t);
-        }
-    }
-
-    private SyndFeed getSyndFeed(String feedUrl) throws java.io.IOException, java.net.MalformedURLException, com.sun.syndication.io.FeedException {
+    public Object doExecute() throws java.io.IOException, java.net.MalformedURLException, com.sun.syndication.io.FeedException {
         SyndFeed result = null;
         XmlReader reader = null;
         try {
-            reader = new XmlReader(new URL(feedUrl));
+            reader = new XmlReader(new URL(url));
             result = new SyndFeedInput().build(reader);
         } finally {
             if (reader != null) {

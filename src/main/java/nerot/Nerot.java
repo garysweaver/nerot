@@ -7,16 +7,19 @@ import nerot.task.HttpGetTask;
 import nerot.task.Primeable;
 import nerot.task.RssTask;
 import nerot.task.Task;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerBean;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 
 /**
  * Nerot lets you to easily schedule tasks on the fly (using Quartz and Spring), calling
@@ -33,7 +36,7 @@ public class Nerot {
      */
     private static final String JOB_GROUP = "Nerot";
 
-    private static final Log LOG = LogFactory.getLog(Nerot.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Nerot.class);
 
     Store store = null;
     Scheduler scheduler = null;
@@ -41,7 +44,7 @@ public class Nerot {
 
     /**
      * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
-     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this.
+     * the first run validation. By defining your own HttpGetTask and using schedule(...), you will have much more control over this. This calls schedule(...) with cronSchedule.
      *
      * @param url          URL of the external resource
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
@@ -52,6 +55,21 @@ public class Nerot {
         task.setStoreKey(url);
         task.setUrl(url);
         schedule(url, task, cronSchedule);
+    }
+
+    /**
+     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * the first run validation. By defining your own HttpGetTask and using schedule(...), you will have much more control over this. This calls schedule(...) with an interval in milliseconds.
+     *
+     * @param url              URL of the external resource
+     * @param intervalInMillis desired interval between task executions in milliseconds
+     */
+    public void scheduleHttpGet(String url, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        HttpGetTask task = new HttpGetTask();
+        task.setStore(store);
+        task.setStoreKey(url);
+        task.setUrl(url);
+        schedule(url, task, intervalInMillis);
     }
 
     /**
@@ -71,7 +89,7 @@ public class Nerot {
 
     /**
      * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
-     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this.
+     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this. This calls schedule(...) with cronSchedule.
      *
      * @param feedUrl      an RSS feed URL
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
@@ -82,6 +100,21 @@ public class Nerot {
         task.setStoreKey(feedUrl);
         task.setUrl(feedUrl);
         schedule(feedUrl, task, cronSchedule);
+    }
+
+    /**
+     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this. This calls schedule(...) with an interval in milliseconds.
+     *
+     * @param feedUrl          an RSS feed URL
+     * @param intervalInMillis desired interval between task executions in milliseconds
+     */
+    public void scheduleRss(String feedUrl, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        RssTask task = new RssTask();
+        task.setStore(store);
+        task.setStoreKey(feedUrl);
+        task.setUrl(feedUrl);
+        schedule(feedUrl, task, intervalInMillis);
     }
 
     /**
@@ -100,7 +133,10 @@ public class Nerot {
     }
 
     /**
-     * Schedule any Task. If you are looking for a generic way to call any object, see the GenericTask wrapper.
+     * Schedule any Task with a cronSchedule. If you are looking for a generic way to call any object, see the GenericTask wrapper.
+     * If task implements Primeable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result
+     * as specified via Primeable. Note: there is a possibility of the prime run on start executing around the same time as the
+     * first scheduled job.
      *
      * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
      * @param task         the Task to execute
@@ -119,6 +155,35 @@ public class Nerot {
         }
 
         schedule(jobId, task, "execute", cronSchedule);
+    }
+
+    /**
+     * Schedule any Task with a defined interval. If you are looking for a generic way to call any object, see the GenericTask wrapper.
+     * If task implements Primeable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result,
+     * as specified via Primeable, and will schedule Quartz to start with the start time defined as new Date(System.currentTimeMillis() + intervalInMillis).
+     * If task isn't Primeable or isPrimeRunOnStart() returns false, it will not delay the Quartz start time and will start immediately
+     * with the specified interval.
+     *
+     * @param jobId            an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
+     * @param task             the Task to execute
+     * @param intervalInMillis desired interval between task executions in milliseconds
+     */
+    public void schedule(String jobId, Task task, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        Date startTime = null;
+
+        if (task instanceof Storable) {
+            ((Storable) task).setStore(store);
+        }
+
+        if (task instanceof Primeable) {
+            Primeable p = (Primeable) task;
+            if (p.isPrimeRunOnStart()) {
+                startTime = new Date(System.currentTimeMillis() + intervalInMillis);
+                executePrimeRun(p, jobId);
+            }
+        }
+
+        schedule(jobId, task, "execute", intervalInMillis, startTime);
     }
 
     private void executePrimeRun(Primeable p, String jobId) {
@@ -145,6 +210,14 @@ public class Nerot {
         LOG.info("Prime run of job '" + jobId + "' was unable to be validated. You may want to try increasing maxPrimeRunValidationAttempts (currently set to " + p.getMaxPrimeRunValidationAttempts() + ") and/or primeRunValidationAttemptIntervalMillis (currently set to " + p.getPrimeRunValidationAttemptIntervalMillis() + ").");
     }
 
+    private String jobScheduleId(String jobId, Object obj, String method, String cronSchedule) {
+        return obj.getClass().getName() + "|" + method + "|cron:" + cronSchedule;
+    }
+
+    private String jobScheduleId(String jobId, Object obj, String method, long intervalInMillis) {
+        return obj.getClass().getName() + "|" + method + "|interval:" + intervalInMillis;
+    }
+
     /**
      * Schedule any object (doesn't even have to be a Task) calling the method on it that you specify with no arguments. You
      * probably want to use the other schedule method that takes a Task and use the GenericTask wrapper instead, as it zero-to-many
@@ -157,9 +230,10 @@ public class Nerot {
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     private void schedule(String jobId, Object obj, String method, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
-        String existingCronSchedule = jobIds.get(jobId);
-        if (existingCronSchedule != null && !existingCronSchedule.equals(cronSchedule)) {
-            // change of schedule to existing job, so unschedule so we'll schedule with newer cronSchedule. This may result with slight overlap of both tasks,
+        String jobScheduleId = jobScheduleId(jobId, obj, method, cronSchedule);
+        String existingJobScheduleId = jobIds.get(jobId);
+        if (existingJobScheduleId != null && !existingJobScheduleId.equals(jobScheduleId)) {
+            // change of schedule to existing job, so unschedule and schedule. This may result with slight overlap of both tasks,
             // assuming it is asynchronous.
             unschedule(jobId);
         }
@@ -174,14 +248,66 @@ public class Nerot {
             jobDetail.afterPropertiesSet();
 
             CronTriggerBean trigger = new CronTriggerBean();
-            trigger.setBeanName("nerot-t_" + jobId);
+            trigger.setBeanName("nerot-ct_" + jobId);
             trigger.setJobDetail((JobDetail) jobDetail.getObject());
             trigger.setCronExpression(cronSchedule);
             trigger.afterPropertiesSet();
 
-            jobIds.put(jobId, cronSchedule);
+            jobIds.put(jobId, jobScheduleId);
             scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
             LOG.info("Scheduled job '" + jobId + "' with schedule '" + cronSchedule + "'");
+        }
+    }
+
+    /**
+     * Schedule any object (doesn't even have to be a Task) calling the method on it that you specify with no arguments. You
+     * probably want to use the other schedule method that takes a Task and use the GenericTask wrapper instead, as it zero-to-many
+     * arguments you specify as well as class or instance methods. This is just a simple way of scheduling execution of a no arg method,
+     * without caring about the implementation of the method (so it doesn't have to store the result, but it could).
+     *
+     * @param jobId            an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
+     * @param obj              any object that it will call no-arg method
+     * @param method           the method name to call on obj
+     * @param intervalInMillis desired interval between task executions in milliseconds
+     * @param startTime        desired start date and time or null if start immediately
+     */
+    private void schedule(String jobId, Object obj, String method, long intervalInMillis, Date startTime) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        // startTime only called internally and we know it will vary, so we don't use it as part of the description of the job schedule,
+        // otherwise might usually create multiple jobs when called with same interval at different times.
+        String jobScheduleId = jobScheduleId(jobId, obj, method, intervalInMillis);
+        String existingJobScheduleId = jobIds.get(jobId);
+        if (existingJobScheduleId != null && !existingJobScheduleId.equals(jobScheduleId)) {
+            // change of schedule to existing job, so unschedule and schedule. This may result with slight overlap of both tasks,
+            // assuming it is asynchronous.
+            unschedule(jobId);
+        }
+
+        if (jobIds.get(jobId) == null) {
+            MethodInvokingJobDetailFactoryBean jobDetail = new MethodInvokingJobDetailFactoryBean();
+            jobDetail.setTargetObject(obj);
+            jobDetail.setTargetMethod(method);
+            jobDetail.setName(jobId);
+            jobDetail.setGroup(JOB_GROUP);
+            jobDetail.setConcurrent(false);
+            jobDetail.afterPropertiesSet();
+
+            SimpleTriggerBean trigger = new SimpleTriggerBean();
+            trigger.setBeanName("nerot-st_" + jobId);
+            trigger.setJobDetail((JobDetail) jobDetail.getObject());
+            trigger.setRepeatCount(SimpleTriggerBean.REPEAT_INDEFINITELY);
+            trigger.setRepeatInterval(intervalInMillis);
+            if (startTime != null) {
+                trigger.setStartTime(startTime);
+            }
+            trigger.afterPropertiesSet();
+
+            jobIds.put(jobId, jobScheduleId);
+            scheduler.scheduleJob((JobDetail) jobDetail.getObject(), trigger);
+            if (startTime != null) {
+                LOG.info("Scheduled job '" + jobId + "' with interval '" + intervalInMillis + "' to start at " + startTime);
+            } else {
+                LOG.info("Scheduled job '" + jobId + "' with interval '" + intervalInMillis + "' to start immediately");
+            }
         }
     }
 

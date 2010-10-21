@@ -1,7 +1,7 @@
 package nerot.task;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  */
 public class GenericTask extends BaseTask {
 
-    private static final Log LOG = LogFactory.getLog(GenericTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenericTask.class);
 
     private Object actor;
     private String method;
@@ -19,29 +19,18 @@ public class GenericTask extends BaseTask {
     /**
      * Execute the generic task using reflection. Supports static and dynamic method execution.
      */
-    public void execute() {
-        try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Executing GenericTask. storeKey='" + getStoreKey() + "', actor='" + actor + "', method='" + method + "'. args='" + arrayToString(args) + "'");
-            }
-
-            Object result = null;
-            if (actor instanceof Class) {
-                Method m = getMethodObject((Class) actor);
-                m.setAccessible(true);
-                result = m.invoke(m, args);
-            } else {
-                Method m = getMethodObject(actor.getClass());
-                m.setAccessible(true);
-                result = m.invoke(actor, args);
-            }
-            storeResult(result);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("stored object for key: " + getStoreKey());
-            }
-        } catch (Throwable t) {
-            LOG.error("failed to set object for key: " + getStoreKey(), t);
+    public Object doExecute() throws Throwable {
+        Object result = null;
+        if (actor instanceof Class) {
+            Method m = getMethodObject((Class) actor);
+            m.setAccessible(true);
+            result = m.invoke(m, args);
+        } else {
+            Method m = getMethodObject(actor.getClass());
+            m.setAccessible(true);
+            result = m.invoke(actor, args);
         }
+        return result;
     }
 
     private Method getMethodObject(Class c) throws Throwable {
