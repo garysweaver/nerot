@@ -47,7 +47,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>3.1</version>
+      <version>3.2</version>
     </dependency>
    
 Along with the repository:
@@ -79,6 +79,8 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. Nerot has a configuable and optional delay to help the cache get populated from what is probably the first execution (called the "prime run"). Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
 
+(In 3.2, we've also tried to add support for autowiring, but autowiring from a parent context (like the Root Web Application Spring context) to child context (like a portlet or servlet application Spring context) doesn't work, so you would have to access the context that Nerot is in from a child context.)
+
 ### Debugging
 
 To enable logging to console, you may add a log4j.properties file to the classpath containing something like:
@@ -92,7 +94,49 @@ To enable logging to console, you may add a log4j.properties file to the classpa
     
     log4j.logger.nerot=DEBUG
 
+Or, if you'd like Perf4J statistics to periodically show up in logs, add something like the following log4j.xml to your classpath:
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+    <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+        <appender class="org.apache.log4j.ConsoleAppender" name="A1">
+            <layout class="org.apache.log4j.TTCCLayout">
+                <param value="enabled" name="ContextPrinting"/>
+                <param value="ISO8601" name="DateFormat"/>
+            </layout>
+        </appender>
+        <appender name="console" class="org.apache.log4j.ConsoleAppender">
+            <layout class="org.apache.log4j.PatternLayout">
+                <param name="ConversionPattern" value="%-5p %c{1} - %m%n"/>
+            </layout>
+        </appender>
+        <appender name="CoalescingStatistics"
+                  class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender">
+            <param name="TimeSlice" value="5000"/>
+            <appender-ref ref="nerotPerf4JAppender"/>
+        </appender>
+        <appender name="nerotPerf4JAppender" class="org.apache.log4j.FileAppender">
+            <param name="File" value="nerot-perf4j.log"/>
+            <layout class="org.apache.log4j.PatternLayout">
+                <param name="ConversionPattern" value="%m%n"/>
+            </layout>
+        </appender>
+        <logger name="nerot">
+            <level value="info"/>
+        </logger>
+        <logger name="org.perf4j.TimingLogger" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="CoalescingStatistics"/>
+        </logger>
+        <root>
+            <level value="warn"/>
+            <appender-ref ref="A1"/>
+        </root>
+    </log4j:configuration>
+
 ### Release History
+
+v3.2 - Replaced commons-logging with slf4j for better OSGi compliance. Added support for interval-based scheduling via Quartz. Replaced log4j.properties with log4j.xml. Refactored task error handling and task start and stop logging into BaseTask. Implementing perf4j usage to support getting stats on tasks via BaseTask.
 
 v3.1 - Fixed access to a method in Nerot class and added MANIFEST.MF in attempt to help people trying to load as OSGi bundle.
 
