@@ -29,7 +29,7 @@
     <artifactId>nerot</artifactId>
     <packaging>jar</packaging>
     <name>Nerot</name>
-    <version>3.2</version>
+    <version>3.3</version>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 

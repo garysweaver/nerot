@@ -53,14 +53,26 @@ public abstract class BaseTask implements Task, Storable, Primeable {
                 LOG.debug("Executing task: '" + getStoreKey() + "'");
             }
             Object result = doExecute();
-            storeResult(result);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Stored result for task: '" + getStoreKey() + "'");
+            if (store==null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("store on " + this.getClass().getName() + " was null. Unable to store result.");
+                }
+            }
+            else if (storeKey==null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("storeKey on " + this.getClass().getName() + " was null. Unable to store result.");
+                }
+            }
+            else {
+                storeResult(result);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stored result for task: '" + getStoreKey() + "'");
+                }
             }
             stopWatch.stop(getStoreKey() + ".success");
         } catch (Throwable t) {
             LOG.error("Task failed: '" + getStoreKey() + "'", t);
-            stopWatch.stop(getStoreKey() + ".failure", "" + t);
+            stopWatch.stop("" + getStoreKey() + ".failure", "" + t);
         }
     }
 

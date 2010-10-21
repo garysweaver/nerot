@@ -143,6 +143,10 @@ public class Nerot {
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
     public void schedule(String jobId, Task task, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        checkParam("jobId", jobId);
+        checkParam("task", task);
+        checkParam("cronSchedule", cronSchedule);
+
         if (task instanceof Storable) {
             ((Storable) task).setStore(store);
         }
@@ -169,6 +173,10 @@ public class Nerot {
      * @param intervalInMillis desired interval between task executions in milliseconds
      */
     public void schedule(String jobId, Task task, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+        checkParam("jobId", jobId);
+        checkParam("task", task);
+        checkParam("intervalInMillis", intervalInMillis);
+
         Date startTime = null;
 
         if (task instanceof Storable) {
@@ -184,6 +192,12 @@ public class Nerot {
         }
 
         schedule(jobId, task, "execute", intervalInMillis, startTime);
+    }
+
+    private void checkParam(String paramName, Object paramValue) throws IllegalArgumentException {
+        if (paramValue == null) {
+            throw new IllegalArgumentException("'" + paramName + "' cannot be null."); 
+        }
     }
 
     private void executePrimeRun(Primeable p, String jobId) {

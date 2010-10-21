@@ -24,7 +24,7 @@
         </layout>
     </appender>
     <logger name="nerot">
-        <level value="info"/>
+        <level value="debug"/>
     </logger>
     <logger name="org.perf4j.TimingLogger" additivity="false">
         <level value="INFO"/>

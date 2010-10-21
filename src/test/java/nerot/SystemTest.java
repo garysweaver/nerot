@@ -20,20 +20,12 @@ import java.util.Iterator;
 @ContextConfiguration(locations = {"nerot.xml"})
 public class SystemTest extends AbstractDependencyInjectionSpringContextTests {
 
+    @Autowired
     private Nerot nerot;
 
     @After
     public void cleanUpJobs() throws Throwable {
         nerot.unscheduleAll();
-    }
-
-    @Autowired
-    public void setNerot(Nerot nerot) {
-        this.nerot = nerot;
-    }
-
-    public Nerot getNerot() {
-        return nerot;
     }
 
     @Test
