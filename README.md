@@ -79,7 +79,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. Nerot has a configuable and optional delay to help the cache get populated from what is probably the first execution (called the "prime run"). Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
 
-(In 3.2, we've also tried to add support for autowiring, but autowiring from a parent context (like the Root Web Application Spring context) to child context (like a portlet or servlet application Spring context) doesn't work, so you would have to access the context that Nerot is in from a child context.)
+(In 3.2, we've also tried to add support for autowiring, but autowiring from a parent context (like the Root Web Application Spring context) to child context (like a portlet or servlet application Spring context) doesn't work, so you would have to access the context that Nerot is in from a child context. You could do this by implementing ApplicationContextAware in the child bean class that requires an instance of Nerot and then get the bean from that context, and there are likely other ways to do this as well.)
 
 ### Debugging
 
