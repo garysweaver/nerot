@@ -82,7 +82,7 @@ public class SomeClass {
         
         <div class="code_example">
           <pre class="code">
-<span class="comment">// Refresh every 15 seconds</span>
+<span class="comment">// Get RSS feed every 15 seconds and cache if no error</span>
 nerot.scheduleRss(url, "0/15 * * * * ?");
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
@@ -94,7 +94,7 @@ nerot.getRssFromStore(url);
         
         <div class="code_example">
           <pre class="code">
-<span class="comment">// Refresh every 60 seconds</span>
+<span class="comment">// Get webpage every 60 seconds and cache if no error</span>
 nerot.scheduleHttpGet(url, 60000L);
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
@@ -106,12 +106,14 @@ nerot.getHttpResponseBodyFromStore(url);
         
         <div class="code_example">
           <pre class="code">
-<span class="comment">// Refresh every second</span>
+<span class="comment">// Define Math.random()</span>
 GenericTask task = new GenericTask();
 task.setStoreKey(key);
 task.setActor(Math.class);
 task.setMethod("random");
-nerot.schedule("myJob", task, "0/1 * * * * ?");
+
+<span class="comment">// Call Math.random() every 15 seconds</span>
+nerot.schedule("myJob", task, 15000L);
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
 Double result = (Double)nerot.getResultFromStore(key);
@@ -122,13 +124,15 @@ Double result = (Double)nerot.getResultFromStore(key);
         
         <div class="code_example">
           <pre class="code">
-<span class="comment">// Refresh every 30 seconds</span>
+<span class="comment">// Define report.generate(...)</span>
 GenericTask task = new GenericTask();
 task.setStoreKey(key);
-task.setActor(new Foobar());
-task.setMethod("someFantasticMethod");
+task.setActor(new Report());
+task.setMethod("generate");
 task.setArgs(new Object[]{"s", y, true, 'c', 1.0D});
-nerot.schedule("myJob", task, 30000L);
+
+<span class="comment">// Call report.generate(...) at 9:15pm every day</span>
+nerot.schedule("myJob", task, "0 15 21 * * ?");
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
 Foobar result = (Foobar)nerot.getResultFromStore(key);
