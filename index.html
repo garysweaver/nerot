@@ -86,7 +86,7 @@ public class SomeClass {
 nerot.scheduleRss(url, "0/15 * * * * ?");
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
-nerot.getRssFromStore(url);
+SyndFeed feed = nerot.getRssFromStore(url);
           </pre>
         </div>
         
@@ -98,7 +98,7 @@ nerot.getRssFromStore(url);
 nerot.scheduleHttpGet(url, 60000L);
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
-nerot.getHttpResponseBodyFromStore(url);
+String page = nerot.getHttpResponseBodyFromStore(url);
           </pre>
         </div>        
         
@@ -116,7 +116,7 @@ task.setMethod("random");
 nerot.schedule("myJob", task, 15000L);
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
-Double result = (Double)nerot.getResultFromStore(key);
+Double random = (Double)nerot.getResultFromStore(key);
           </pre>
         </div>
         
@@ -124,10 +124,10 @@ Double result = (Double)nerot.getResultFromStore(key);
         
         <div class="code_example">
           <pre class="code">
-<span class="comment">// Define report.generate(...)</span>
+<span class="comment">// Define reporter.generate(...)</span>
 GenericTask task = new GenericTask();
 task.setStoreKey(key);
-task.setActor(new Report());
+task.setActor(new Reporter());
 task.setMethod("generate");
 task.setArgs(new Object[]{"s", y, true, 'c', 1.0D});
 
@@ -135,7 +135,7 @@ task.setArgs(new Object[]{"s", y, true, 'c', 1.0D});
 nerot.schedule("myJob", task, "0 15 21 * * ?");
 
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
-Foobar result = (Foobar)nerot.getResultFromStore(key);
+Report stats = (Report)nerot.getResultFromStore(key);
           </pre>
         </div>
         
