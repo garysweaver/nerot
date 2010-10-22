@@ -72,13 +72,15 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 ### Configuration/Usage
 
+First see the [site][website]'s quickstart example, but come here for detail.
+
 1. If using Spring, include [nerot.xml][config] as one of the contexts to load. If you have webapp/portlet/servlet, you can add nerot.xml into your web.xml, so that it is loaded into the application context:
 
        <context-param>
            <param-name>contextConfigLocation</param-name>
            <!-- the root context loaded when the webapp loads -->
            <param-value>
-               ...
+               /WEB-INF/context/myapplication.xml
                classpath*:nerot/nerot.xml
            </param-value>
        </context-param>
@@ -95,7 +97,49 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
        @Autowired
        private Nerot nerot;
 
-3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included Spring schedulers[sch]. First see the [site][website]'s quickstart example. For more examples, see the tests which have usable [scheduler configs][schexcfg] for each kind of scheduling method, and of course, see the related [tests][schex] to see how easy it is to get the cached values.
+3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included [Spring schedulers][sch]. See the [scheduler configs][schexcfg] and implementation in the [tests][schex], also.
+
+   If loading classpath*:nerot/nerot.xml in web.xml, just put this in the root context of your webapp (e.g. myapplication.xml in the example web.xml above).
+
+       <?xml version="1.0" encoding="UTF-8"?>
+       <beans xmlns="http://www.springframework.org/schema/beans"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:p="http://www.springframework.org/schema/p"
+              xmlns:context="http://www.springframework.org/schema/context"
+              xmlns:tx="http://www.springframework.org/schema/tx"
+              xsi:schemaLocation="
+                http://www.springframework.org/schema/beans 
+                http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/context 
+                http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                http://www.springframework.org/schema/tx 
+                http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+           <context:annotation-config />
+
+           <bean name="rssCronScheduler" class="nerot.spring.RssCronScheduler">
+               <property name="url" value="http://news.acme.com/rss"/>
+               <property name="cronSchedule" value="0/1 * * * * ?"/>
+           </bean>
+       </beans>
+
+Then put these in your controller:
+
+       @Autowired
+       Nerot nerot;
+
+       @Autowired 
+       Storer storer;
+       
+And just call this in the controller to access the feed, which gets it from in-memory cache.
+
+       SyndFeed feed = nerot.getRssFromStore(storer.getStoreKey());
+
+Note: Go back and qualify it with a bean name, to ensure it would work when other Storer beans are in context:
+
+       @Autowired
+       @Qualifier("rssCronScheduler")
+       Storer storer;
 
 ### Debugging
 
