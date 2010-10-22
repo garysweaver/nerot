@@ -31,6 +31,10 @@ Nerot was originally short for "Nero task", since it would schedule tasks like g
 
 It seems also that there is a Jewish tradition called Nerot or Hadlakat Nerot which is a commandment for lighting candles. In a way, lighting candles is somewhat like starting new scheduled tasks.
 
+### Quickstart
+
+The [site][website] contains a quickstart tutorial.
+
 ### Build
 
 If you wish to build and install into your personal Maven 2 repository, use:
@@ -68,7 +72,16 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 ### Configuration/Usage
 
-1. Either just include [nerot.xml][config] as one of the contexts to load, or add its contents into your Spring context file, or just do the equivalent.
+1. If using Spring, include [nerot.xml][config] as one of the contexts to load. If you have webapp/portlet/servlet, you can add nerot.xml into your web.xml, so that it is loaded into the application context:
+
+       <context-param>
+           <param-name>contextConfigLocation</param-name>
+           <!-- the root context loaded when the webapp loads -->
+           <param-value>
+               ...
+               classpath*:nerot/nerot.xml
+           </param-value>
+       </context-param>
 
 2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
 
@@ -77,9 +90,12 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
            ...
        </bean>
 
-3. If using Spring, you can use the implementation InitializingBean and definition of afterPropertiesSet() (or similar hook) as a way to schedule the task execution immediately after properties are set on the bean. Nerot has a configuable and optional delay to help the cache get populated from what is probably the first execution (called the "prime run"). Then, in the rendering method, you just call Nerot to get the result from the Store. See [PortletController.java][PortletController.java] for an example.
+   or just let it autowire itself as it is enabled to do with the default configuration by just defining this in your controller:
+   
+       @Autowired
+       private Nerot nerot;
 
-(In 3.2, we've also tried to add support for autowiring, but autowiring from a parent context (like the Root Web Application Spring context) to child context (like a portlet or servlet application Spring context) doesn't work, so you would have to access the context that Nerot is in from a child context. You could do this by implementing ApplicationContextAware in the child bean class that requires an instance of Nerot and then get the bean from that context, and there are likely other ways to do this as well.)
+3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included Spring schedulers[sch]. First see the [site][website]'s quickstart example. For more examples, see the tests which have usable [scheduler configs][schexcfg] for each kind of scheduling method, and of course, see the related [tests][schex] to see how easy it is to get the cached values. Some refactoring could be done to define the URLs in a central location.
 
 ### Debugging
 
@@ -152,6 +168,10 @@ v1.0 - Initial Release. Support for RSS and generic tasks.
 
 Copyright (c) 2010 Gary S. Weaver, released under the [MIT license][lic].
 
+[sch]: http://github.com/garysweaver/nerot/tree/master/src/main/java/nerot/spring
+[schex]: http://github.com/garysweaver/nerot/tree/master/src/test/java/nerot/spring
+[schexcfg]: http://github.com/garysweaver/nerot/tree/master/src/test/resources/nerot/spring
+[website]: http://garysweaver.github.com/nerot
 [lic]: http://github.com/garysweaver/nerot/blob/master/LICENSE
 [rel]: http://garysweaver.github.com/nerot/releases
 [config]: http://github.com/garysweaver/nerot/blob/master/src/main/resources/nerot.xml
