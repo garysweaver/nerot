@@ -150,6 +150,12 @@ Or, if you'd like Perf4J statistics to periodically show up in logs, add somethi
         </root>
     </log4j:configuration>
 
+And you can see the request time being saved by using Nerot:
+
+    Performance Statistics   2010-10-20 20:00:00 - 2010-10-21 20:00:00
+    Tag                                     Avg(ms)         Min         Max     Std Dev       Count
+    http://news.acme.com/feed/.success        609.5         348        1253       294.7           6
+
 ### Release History
 
 v3.3 - Added classes to allow you to define Spring beans that schedule Nerot on instantiation in parent webapp context, to enforce no waiting when child context instantiated.
