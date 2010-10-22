@@ -158,6 +158,8 @@ And you can see the request time being saved by using Nerot:
 
 ### Release History
 
+v3.4 - Added Storer interface that just has getStoreKey() and made Spring schedulers implement it, so that you can easily just change the Spring config to switch between interval and cron or different types of scheduling methods. Just autowire nerot and storer, and get the result like nerot.getHttpResponseBodyFromStore(storer.getStoreKey()). I think this is more flexible.
+
 v3.3 - Added classes to allow you to define Spring beans that schedule Nerot on instantiation in parent webapp context, to enforce no waiting when child context instantiated.
 
 v3.2 - Replaced commons-logging with slf4j for better OSGi compliance. Added support for interval-based scheduling via Quartz. Replaced log4j.properties with log4j.xml. Refactored task error handling and task start and stop logging into BaseTask. Implementing perf4j usage to support getting stats on tasks via BaseTask.
