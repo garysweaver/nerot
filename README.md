@@ -51,7 +51,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>3.2</version>
+      <version>3.3</version>
     </dependency>
    
 Along with the repository:
