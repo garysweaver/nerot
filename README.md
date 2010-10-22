@@ -202,7 +202,7 @@ And you can see the request time being saved by using Nerot:
 
 ### Release History
 
-v3.4 - Added Storer interface that just has getStoreKey() and made Spring schedulers implement it, so that you can easily just change the Spring config to switch between interval and cron or different types of scheduling methods. Just autowire nerot and storer, and get the result like nerot.getHttpResponseBodyFromStore(storer.getStoreKey()). I think this is more flexible.
+v3.4 - Added Storer interface that just has getStoreKey() and made Spring schedulers implement it, so that you can easily just change the Spring config to switch between interval and cron or different types of scheduling methods. Just autowire nerot and storer, and get the result like nerot.getHttpResponseBodyFromStore(storer.getStoreKey()). I think this is more flexible. Renamed Primeable to Primable.
 
 v3.3 - Added classes to allow you to define Spring beans that schedule Nerot on instantiation in parent webapp context, to enforce no waiting when child context instantiated.
 
