@@ -1,0 +1,9 @@
+#NOTE: This is an internal implementation file, its format can be changed without prior notice.
+#Fri Oct 22 13:22:35 EDT 2010
+http\://garysweaver.github.com/nerot/m2/releases/.lastUpdated=1287768155527
+http\://repo1.maven.org/maven2/.error=
+http\://developer.ja-sig.org/maven2/.error=
+http\://developer.ja-sig.org/maven2/.lastUpdated=1287768155355
+http\://repo1.maven.org/maven2/.lastUpdated=1287768155430
+http\://webhost-sandbox.oit.duke.edu\:8042/archiva/repository/internal/.error=Could not transfer artifact nerot\:nerot\:jar\:3.4 from internal (http\://webhost-sandbox.oit.duke.edu\:8042/archiva/repository/internal/)\: Error transferring file\: Connection refused
+24ad75ff6fdde96bbb763af1988d6de532ec2e39@default-http\://webhost-sandbox.oit.duke.edu\:8042/archiva/repository/internal/.lastUpdated=1287768155216

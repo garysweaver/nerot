@@ -1,4 +1,6 @@
 #NOTE: This is an internal implementation file, its format can be changed without prior notice.
-#Fri Oct 22 12:47:42 EDT 2010
+#Fri Oct 22 14:41:41 EDT 2010
+nerot-3.4.jar>nerot-repository=
 nerot-3.4.jar>=
+nerot-3.4.pom>nerot-repository=
 nerot-3.4.pom>=
