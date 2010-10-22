@@ -27,7 +27,7 @@
 &lt;dependency&gt;
     &lt;groupId&gt;nerot&lt;/groupId&gt;
     &lt;artifactId&gt;nerot&lt;/artifactId&gt;
-    &lt;version&gt;3.2&lt;/version&gt;
+    &lt;version&gt;3.3&lt;/version&gt;
 &lt;/dependency&gt;</pre>
         Add this repository to your pom.xml:
         <pre class="config">
@@ -138,6 +138,38 @@ nerot.schedule("myJob", task, "0 15 21 * * ?");
 Report stats = (Report)nerot.getResultFromStore(key);
           </pre>
         </div>
+        
+        <h2>Schedule Methods via Spring Beans</h2>
+        
+        Nerot includes <a href="http://github.com/garysweaver/nerot/tree/master/src/main/java/nerot/spring">classes</a> for each type of schedule comment that schedule Nerot when the Spring beans is configured in the context. Just define a bean in the root application context and then get the result programmatically in the child context. Easy!
+        
+        <pre class="config">
+          &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+          &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+                 xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+                 xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+                 xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+                 xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+                 xsi:schemaLocation=&quot;
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd&quot;
+                 &gt;
+
+              &lt;context:annotation-config /&gt;
+
+              &lt;bean name=&quot;rssCronScheduler&quot; class=&quot;nerot.spring.RssCronScheduler&quot;&gt;
+                  &lt;property name=&quot;url&quot; value=&quot;http://news.google.com/news?ned=us&amp;amp;topic=t&amp;amp;output=rss&quot;/&gt;
+                  &lt;property name=&quot;cronSchedule&quot; value=&quot;0/1 * * * * ?&quot;/&gt;
+              &lt;/bean&gt;
+          &lt;/beans&gt;</pre>
+
+        <div class="code_example">
+          <pre class="code">
+<span class="comment">// Retrieve the result from in-memory cache without delay</span>
+SyndFeed feed = nerot.getRssFromStore("http://news.google.com/news?ned=us&topic=t&output=rss")
+        </pre>
+      </div>
         
       <div id="footer">
         <div id="copyright">
