@@ -136,6 +136,8 @@ Or, if you'd like Perf4J statistics to periodically show up in logs, add somethi
 
 ### Release History
 
+v3.3 - Added classes to allow you to define Spring beans that schedule Nerot on instantiation in parent webapp context, to enforce no waiting when child context instantiated.
+
 v3.2 - Replaced commons-logging with slf4j for better OSGi compliance. Added support for interval-based scheduling via Quartz. Replaced log4j.properties with log4j.xml. Refactored task error handling and task start and stop logging into BaseTask. Implementing perf4j usage to support getting stats on tasks via BaseTask.
 
 v3.1 - Fixed access to a method in Nerot class and added MANIFEST.MF in attempt to help people trying to load as OSGi bundle.
