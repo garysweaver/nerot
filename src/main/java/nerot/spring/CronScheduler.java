@@ -1,6 +1,7 @@
 package nerot.spring;
 
 import nerot.Nerot;
+import nerot.store.Storer;
 import nerot.task.Task;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p/>
  * (See the corresponding schedule method in Nerot for more details on the types and functions of that method.)
  */
-public class CronScheduler implements InitializingBean {
+public class CronScheduler implements InitializingBean, Storer {
 
     @Autowired
     private Nerot nerot;
@@ -72,5 +73,18 @@ public class CronScheduler implements InitializingBean {
 
     public void setCronSchedule(String cronSchedule) {
         this.cronSchedule = cronSchedule;
+    }
+
+    /**
+     * Gets the store key from task, if it implements Storer. Otherwise returns null.
+     *
+     * @return store key
+     */
+    public String getStoreKey() {
+        String storeKey = null;
+        if (task instanceof Storer) {
+            storeKey = ((Storer)task).getStoreKey();
+        }
+        return storeKey;
     }
 }

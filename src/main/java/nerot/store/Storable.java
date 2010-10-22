@@ -1,9 +1,9 @@
 package nerot.store;
 
 /**
- * Something that can store its result.
+ * Something that has a Store and allows read/write access to a store key.
  */
-public interface Storable {
+public interface Storable extends Storer {
 
     /**
      * Sets the Store.
@@ -11,13 +11,6 @@ public interface Storable {
      * @param store the Store to set.
      */
     public void setStore(Store store);
-
-    /**
-     * Gets the key for the Store to use for this Task's result.
-     *
-     * @return the key for the Store to use for this Task's result.
-     */
-    public String getStoreKey();
 
     /**
      * Sets the key for the Store to use for this Task's result.

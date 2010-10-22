@@ -1,6 +1,7 @@
 package nerot.spring;
 
 import nerot.Nerot;
+import nerot.store.Storer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p/>
  * (See the corresponding schedule method in Nerot for more details on the types and functions of that method.)
  */
-public class HttpGetCronScheduler implements InitializingBean {
+public class HttpGetCronScheduler implements InitializingBean, Storer {
 
     @Autowired
     private Nerot nerot;
@@ -61,5 +62,14 @@ public class HttpGetCronScheduler implements InitializingBean {
 
     public void setCronSchedule(String cronSchedule) {
         this.cronSchedule = cronSchedule;
+    }
+
+    /**
+     * Gets the store key. In this case, the url.
+     *
+     * @return the store key
+     */
+    public String getStoreKey() {
+        return url;
     }
 }

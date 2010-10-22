@@ -1,9 +1,11 @@
 package nerot.spring;
 
 import nerot.Nerot;
+import nerot.store.Storer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,8 +19,12 @@ public class HttpGetIntervalSchedulerTest extends AbstractDependencyInjectionSpr
     @Autowired
     public Nerot nerot;
 
+    @Autowired
+    @Qualifier("httpGetIntervalScheduler")
+    public Storer storer;
+
     @Test
     public void testHttpGetIntervalScheduler() {
-        assertNotNull(nerot.getHttpResponseBodyFromStore("http://www.google.com/"));
+        assertNotNull(nerot.getHttpResponseBodyFromStore(storer.getStoreKey()));
     }
 }

@@ -51,7 +51,7 @@ If you wish to just use it as part of your project as a dependency, use this in 
     <dependency>
       <groupId>nerot</groupId>
       <artifactId>nerot</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
     </dependency>
    
 Along with the repository:
@@ -95,7 +95,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
        @Autowired
        private Nerot nerot;
 
-3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included Spring schedulers[sch]. First see the [site][website]'s quickstart example. For more examples, see the tests which have usable [scheduler configs][schexcfg] for each kind of scheduling method, and of course, see the related [tests][schex] to see how easy it is to get the cached values. Some refactoring could be done to define the URLs in a central location.
+3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included Spring schedulers[sch]. First see the [site][website]'s quickstart example. For more examples, see the tests which have usable [scheduler configs][schexcfg] for each kind of scheduling method, and of course, see the related [tests][schex] to see how easy it is to get the cached values.
 
 ### Debugging
 
