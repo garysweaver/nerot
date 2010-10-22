@@ -141,7 +141,7 @@ Report stats = (Report)nerot.getResultFromStore(key);
         
         <h2>Schedule Methods via Spring Beans</h2>
         
-        Nerot includes <a href="http://github.com/garysweaver/nerot/tree/master/src/main/java/nerot/spring">classes</a> for each type of schedule comment that schedule Nerot when the Spring beans is configured in the context. Just define a bean in the root application context and then get the result programmatically in the child context. Easy!
+        Nerot includes <a href="http://github.com/garysweaver/nerot/tree/master/src/main/java/nerot/spring">classes</a> for each type of schedule comment that schedule Nerot when the Spring bean is configured in the context. Just define a bean in the root application context and then get the result programmatically in the child context.
         
         <pre class="config">
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -179,6 +179,8 @@ Storer storer;
 SyndFeed feed = nerot.getRssFromStore(storer.getStoreKey());
         </pre>                         
       </div>
+      
+      See <a href="http://github.com/garysweaver/nerot">README</a> for more info.
         
       <div id="footer">
         <div id="copyright">
