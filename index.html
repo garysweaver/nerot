@@ -156,13 +156,12 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://www.springframework.org/schema/context 
 http://www.springframework.org/schema/context/spring-context-2.5.xsd
 http://www.springframework.org/schema/tx 
-http://www.springframework.org/schema/tx/spring-tx-2.5.xsd&quot;
-       &gt;
+http://www.springframework.org/schema/tx/spring-tx-2.5.xsd&quot;&gt;
 
     &lt;context:annotation-config /&gt;
 
     &lt;bean name=&quot;rssCronScheduler&quot; class=&quot;nerot.spring.RssCronScheduler&quot;&gt;
-        &lt;property name=&quot;url&quot; value=&quot;http://news.google.com/news?ned=us&amp;amp;topic=t&amp;amp;output=rss&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;http://news.acme.com/rss&quot;/&gt;
         &lt;property name=&quot;cronSchedule&quot; value=&quot;0/1 * * * * ?&quot;/&gt;
     &lt;/bean&gt;
 &lt;/beans&gt;</pre>
@@ -170,8 +169,8 @@ http://www.springframework.org/schema/tx/spring-tx-2.5.xsd&quot;
         <div class="code_example">
           <pre class="code">
 <span class="comment">// Retrieve the result from in-memory cache without delay</span>
-SyndFeed feed = nerot.getRssFromStore("http://news.google.com/news?ned=us&topic=t&output=rss")
-        </pre>
+SyndFeed feed = nerot.getRssFromStore("http://news.acme.com/rss");
+        </pre>                         
       </div>
         
       <div id="footer">
