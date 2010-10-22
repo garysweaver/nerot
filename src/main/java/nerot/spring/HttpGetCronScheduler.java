@@ -26,7 +26,7 @@ public class HttpGetCronScheduler implements InitializingBean, Storer {
     private Nerot nerot;
     private String url;
     private String cronSchedule;
-    
+
     public void afterPropertiesSet() throws Exception {
         nerot.scheduleHttpGet(url, cronSchedule);
     }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * This bean lets you schedule Nerot by just defining a bean (e.g. in the root context of your application). The
  * properties that must be set on the bean are the same as the ones on the corresponding schedule method in Nerot:
  * <p>
- * nerot.schedule(jobId, task, cronSchedule); 
+ * nerot.schedule(jobId, task, cronSchedule);
  * </p>
  * The following are properties that must be set on this bean:
  * <ul>
@@ -83,7 +83,7 @@ public class CronScheduler implements InitializingBean, Storer {
     public String getStoreKey() {
         String storeKey = null;
         if (task instanceof Storer) {
-            storeKey = ((Storer)task).getStoreKey();
+            storeKey = ((Storer) task).getStoreKey();
         }
         return storeKey;
     }

@@ -3,7 +3,7 @@ package nerot.task;
 /**
  * Tasks implementing the ability to run once at beginning of schedule and perhaps checking a few times to attempt for it to start correctly.
  */
-public interface Primeable {
+public interface Primable {
 
     /**
      * Executes the task once prior to scheduling, if isPrimeRunOnStart().

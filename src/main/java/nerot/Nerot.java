@@ -4,7 +4,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import nerot.store.Storable;
 import nerot.store.Store;
 import nerot.task.HttpGetTask;
-import nerot.task.Primeable;
+import nerot.task.Primable;
 import nerot.task.RssTask;
 import nerot.task.Task;
 import org.quartz.JobDetail;
@@ -43,7 +43,7 @@ public class Nerot {
     Map<String, String> jobIds = new HashMap();
 
     /**
-     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * Creates and schedules an HttpGetTask. For convenience, it uses url as the storeKey and jobId. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
      * the first run validation. By defining your own HttpGetTask and using schedule(...), you will have much more control over this. This calls schedule(...) with cronSchedule.
      *
      * @param url          URL of the external resource
@@ -58,7 +58,7 @@ public class Nerot {
     }
 
     /**
-     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * Creates and schedules an HttpGetTask. For convenience, it uses url as the storeKey and jobId. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
      * the first run validation. By defining your own HttpGetTask and using schedule(...), you will have much more control over this. This calls schedule(...) with an interval in milliseconds.
      *
      * @param url              URL of the external resource
@@ -88,54 +88,54 @@ public class Nerot {
     }
 
     /**
-     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * Creates and schedules an RssTask. For convenience, it uses url as the storeKey and jobId. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
      * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this. This calls schedule(...) with cronSchedule.
      *
-     * @param feedUrl      an RSS feed URL
+     * @param url          an RSS feed URL
      * @param cronSchedule A <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">Quartz cron schedule</a>. essentially like unix CRON except it adds an additional prefix for seconds like "0/5 * * * * ?" for every five seconds.
      */
-    public void scheduleRss(String feedUrl, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+    public void scheduleRss(String url, String cronSchedule) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
         RssTask task = new RssTask();
         task.setStore(store);
-        task.setStoreKey(feedUrl);
-        task.setUrl(feedUrl);
-        schedule(feedUrl, task, cronSchedule);
+        task.setStoreKey(url);
+        task.setUrl(url);
+        schedule(url, task, cronSchedule);
     }
 
     /**
-     * Creates and schedules an RssTask using feedUrl as the storeKey, feedUrl, and jobId, for convenience. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
+     * Creates and schedules an RssTask. For convenience, it uses url as the storeKey and jobId. Uses BaseTask defaults so may block thread for a defined amount of time to wait on
      * the first run validation. By defining your own RssTask and using schedule(...), you will have much more control over this. This calls schedule(...) with an interval in milliseconds.
      *
-     * @param feedUrl          an RSS feed URL
+     * @param url              an RSS feed URL
      * @param intervalInMillis desired interval between task executions in milliseconds
      */
-    public void scheduleRss(String feedUrl, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
+    public void scheduleRss(String url, long intervalInMillis) throws java.text.ParseException, org.quartz.SchedulerException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodException {
         RssTask task = new RssTask();
         task.setStore(store);
-        task.setStoreKey(feedUrl);
-        task.setUrl(feedUrl);
-        schedule(feedUrl, task, intervalInMillis);
+        task.setStoreKey(url);
+        task.setUrl(url);
+        schedule(url, task, intervalInMillis);
     }
 
     /**
-     * Get a SyndFeed from the Store using the specified feedUrl as the key.
-     * This is equivalent to calling get(feedUrl), casting the result as SyndFeed.
+     * Get a SyndFeed from the Store using the specified url as the key.
+     * This is equivalent to calling get(url), casting the result as SyndFeed.
      *
-     * @param feedUrl an RSS feed URL that was scheduled
+     * @param url an RSS feed URL that was scheduled
      * @return the SyndFeed result of Rome RSS parsing the feed URL
      */
-    public SyndFeed getRssFromStore(String feedUrl) {
+    public SyndFeed getRssFromStore(String url) {
         SyndFeed result = null;
         if (store != null) {
-            result = (SyndFeed) store.get(feedUrl);
+            result = (SyndFeed) store.get(url);
         }
         return result;
     }
 
     /**
      * Schedule any Task with a cronSchedule. If you are looking for a generic way to call any object, see the GenericTask wrapper.
-     * If task implements Primeable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result
-     * as specified via Primeable. Note: there is a possibility of the prime run on start executing around the same time as the
+     * If task implements Primable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result
+     * as specified via Primable. Note: there is a possibility of the prime run on start executing around the same time as the
      * first scheduled job.
      *
      * @param jobId        an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
@@ -151,8 +151,8 @@ public class Nerot {
             ((Storable) task).setStore(store);
         }
 
-        if (task instanceof Primeable) {
-            Primeable p = (Primeable) task;
+        if (task instanceof Primable) {
+            Primable p = (Primable) task;
             if (p.isPrimeRunOnStart()) {
                 executePrimeRun(p, jobId);
             }
@@ -163,9 +163,9 @@ public class Nerot {
 
     /**
      * Schedule any Task with a defined interval. If you are looking for a generic way to call any object, see the GenericTask wrapper.
-     * If task implements Primeable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result,
-     * as specified via Primeable, and will schedule Quartz to start with the start time defined as new Date(System.currentTimeMillis() + intervalInMillis).
-     * If task isn't Primeable or isPrimeRunOnStart() returns false, it will not delay the Quartz start time and will start immediately
+     * If task implements Primable and isPrimeRunOnStart() it will spawn a thread to execute and will delay/check for first result,
+     * as specified via Primable, and will schedule Quartz to start with the start time defined as new Date(System.currentTimeMillis() + intervalInMillis).
+     * If task isn't Primable or isPrimeRunOnStart() returns false, it will not delay the Quartz start time and will start immediately
      * with the specified interval.
      *
      * @param jobId            an arbitrary jobId that can be used to ensure that: the same job is not started twice if called twice, the schedule can be changed for that job just by calling schedule again, and the job can be cancelled without having to cancel all.
@@ -183,8 +183,8 @@ public class Nerot {
             ((Storable) task).setStore(store);
         }
 
-        if (task instanceof Primeable) {
-            Primeable p = (Primeable) task;
+        if (task instanceof Primable) {
+            Primable p = (Primable) task;
             if (p.isPrimeRunOnStart()) {
                 startTime = new Date(System.currentTimeMillis() + intervalInMillis);
                 executePrimeRun(p, jobId);
@@ -196,11 +196,11 @@ public class Nerot {
 
     private void checkParam(String paramName, Object paramValue) throws IllegalArgumentException {
         if (paramValue == null) {
-            throw new IllegalArgumentException("'" + paramName + "' cannot be null."); 
+            throw new IllegalArgumentException("'" + paramName + "' cannot be null.");
         }
     }
 
-    private void executePrimeRun(Primeable p, String jobId) {
+    private void executePrimeRun(Primable p, String jobId) {
         p.primeRun();
 
         if (p.isPrimeRunValid()) {
@@ -328,7 +328,7 @@ public class Nerot {
     /**
      * Get an Object from the Store that was set by a Task.
      *
-     * @param key the key set on the GenericTask, the feedUrl, or whatever key was used by the Task/called object as the key for the value in the Store.
+     * @param key the key set on the GenericTask, the url, or whatever key was used by the Task/called object as the key for the value in the Store.
      * @return result from Store for the specified key
      */
     public Object getResultFromStore(String key) {

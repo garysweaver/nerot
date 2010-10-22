@@ -83,7 +83,7 @@ public class IntervalScheduler implements InitializingBean, Storer {
     public String getStoreKey() {
         String storeKey = null;
         if (task instanceof Storer) {
-            storeKey = ((Storer)task).getStoreKey();
+            storeKey = ((Storer) task).getStoreKey();
         }
         return storeKey;
     }

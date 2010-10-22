@@ -210,7 +210,7 @@ v3.2 - Replaced commons-logging with slf4j for better OSGi compliance. Added sup
 
 v3.1 - Fixed access to a method in Nerot class and added MANIFEST.MF in attempt to help people trying to load as OSGi bundle.
 
-v3.0 - More changes to method names/API for simplification and better class organization. Addition of HTTP GET task. Addition of prime run and related Primeable interface to make it easier to define tasks that check after schedule to try to give the optional first execution time to populate cache.
+v3.0 - More changes to method names/API for simplification and better class organization. Addition of HTTP GET task. Addition of prime run and related Primable interface to make it easier to define tasks that check after schedule to try to give the optional first execution time to populate cache.
 
 v2.0 - Changes to method names/API for clarification. Addition of initial task execution option/default.
 

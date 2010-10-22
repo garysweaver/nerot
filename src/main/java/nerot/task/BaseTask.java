@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A task that has a Store.
  */
-public abstract class BaseTask implements Task, Storable, Primeable {
+public abstract class BaseTask implements Task, Storable, Primable {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseTask.class);
 
@@ -53,17 +53,15 @@ public abstract class BaseTask implements Task, Storable, Primeable {
                 LOG.debug("Executing task: '" + getStoreKey() + "'");
             }
             Object result = doExecute();
-            if (store==null) {
+            if (store == null) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("store on " + this.getClass().getName() + " was null. Unable to store result.");
                 }
-            }
-            else if (storeKey==null) {
+            } else if (storeKey == null) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("storeKey on " + this.getClass().getName() + " was null. Unable to store result.");
                 }
-            }
-            else {
+            } else {
                 storeResult(result);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stored result for task: '" + getStoreKey() + "'");
