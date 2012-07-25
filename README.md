@@ -74,7 +74,7 @@ If you'd like to use with Ivy, etc. or just as an Ant dependency and need the ja
 
 First see the [site][website]'s quickstart example, but come here for detail.
 
-1. If using Spring, include [nerot.xml][config] as one of the contexts to load. If you have webapp/portlet/servlet, you can add nerot.xml into your web.xml, so that it is loaded into the application context:
+If using Spring, include [nerot.xml][config] as one of the contexts to load. If you have webapp/portlet/servlet, you can add nerot.xml into your web.xml, so that it is loaded into the application context:
 
        <context-param>
            <param-name>contextConfigLocation</param-name>
@@ -85,21 +85,21 @@ First see the [site][website]'s quickstart example, but come here for detail.
            </param-value>
        </context-param>
 
-2. Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
+Have your controller (or other Spring bean) set Nerot to the nerot bean instance defined in the [nerot bean's config][config]:
 
        <bean name="yourController" class="com.acme.YourController">
            <property name="nerot" ref="nerot"/>
            ...
        </bean>
 
-   or just let it autowire itself as it is enabled to do with the default configuration by just defining this in your controller:
-   
+or just let it autowire itself as it is enabled to do with the default configuration by just defining this in your controller:
+
        @Autowired
        private Nerot nerot;
 
-3. If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included [Spring schedulers][sch]. See the [scheduler configs][schexcfg] and implementation in the [tests][schex], also.
+If you want to avoid delays in getting content or missing content when scheduling at runtime, use the included [Spring schedulers][sch]. See the [scheduler configs][schexcfg] and implementation in the [tests][schex], also.
 
-   If loading classpath*:nerot/nerot.xml in web.xml, just put this in the root context of your webapp (e.g. myapplication.xml in the example web.xml above).
+If loading classpath*:nerot/nerot.xml in web.xml, just put this in the root context of your webapp (e.g. myapplication.xml in the example web.xml above).
 
        <?xml version="1.0" encoding="UTF-8"?>
        <beans xmlns="http://www.springframework.org/schema/beans"
@@ -127,7 +127,7 @@ Then put these in your controller:
 
        @Autowired
        Nerot nerot;
-
+       
        @Autowired 
        Storer storer;
        
